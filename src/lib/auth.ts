@@ -4,7 +4,7 @@ import { compare } from 'bcryptjs';
 import { db } from './db';
 import { sanitizeEmail, sanitizePassword } from './security';
 
-const PLATFORM_ADMIN_EMAILS = (process.env.PLATFORM_ADMIN_EMAILS || process.env.PLATFORM_ADMIN_EMAIL || 'reviewtaps77@gmail.com')
+const PLATFORM_ADMIN_EMAILS = (process.env.PLATFORM_ADMIN_EMAILS || process.env.PLATFORM_ADMIN_EMAIL || 'reviewtaps77@gmail.com,admin@reviewtap.in')
   .split(',')
   .map((email) => email.trim().toLowerCase())
   .filter(Boolean);

@@ -155,7 +155,8 @@ export default function LoginPage() {
           <div className="mt-6 p-3 rounded-2xl bg-blue-50/70 border border-blue-100 text-xs text-slate-600 space-y-1">
             <p className="font-bold text-blue-900">Demo Accounts (from Seed):</p>
             <p><strong>Owner:</strong> rahul@cafedelight.com / owner123</p>
-            <p><strong>Admin:</strong> admin@reviewtap.in / admin123</p>
+            <p><strong>Platform Admin:</strong> reviewtaps77@gmail.com / s7eIvLHnJJ-g_iA</p>
+            <p className="text-[11px] text-slate-500">Legacy alias still accepted: admin@reviewtap.in</p>
           </div>
         </CardContent>
 
