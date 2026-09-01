@@ -4,6 +4,16 @@ import { compare } from 'bcryptjs';
 import { db } from './db';
 import { sanitizeEmail, sanitizePassword } from './security';
 
+const PLATFORM_ADMIN_EMAILS = (process.env.PLATFORM_ADMIN_EMAILS || process.env.PLATFORM_ADMIN_EMAIL || 'reviewtaps77@gmail.com')
+  .split(',')
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);
+
+export function isPlatformAdminEmail(email?: string | null) {
+  if (!email) return false;
+  return PLATFORM_ADMIN_EMAILS.includes(email.trim().toLowerCase());
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   providers: [
@@ -25,6 +35,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (!user) return null;
+
+        if (user.role === 'admin' && !isPlatformAdminEmail(user.email)) {
+          return null;
+        }
 
         const isValid = await compare(password, user.passwordHash);
 

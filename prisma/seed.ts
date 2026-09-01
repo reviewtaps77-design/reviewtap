@@ -6,13 +6,16 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database...');
 
+  const platformAdminEmail = process.env.PLATFORM_ADMIN_EMAIL || 'reviewtaps77@gmail.com';
+  const platformAdminPassword = process.env.PLATFORM_ADMIN_PASSWORD || 's7eIvLHnJJ-g_iA';
+
   // Create admin user
-  const adminPassword = await hash('admin123', 12);
+  const adminPassword = await hash(platformAdminPassword, 12);
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@reviewtap.in' },
+    where: { email: platformAdminEmail },
     update: {},
     create: {
-      email: 'admin@reviewtap.in',
+      email: platformAdminEmail,
       passwordHash: adminPassword,
       name: 'Platform Admin',
       role: 'admin',
@@ -103,7 +106,7 @@ async function main() {
 
   console.log('\n🎉 Seed completed successfully!');
   console.log('\n📋 Login credentials:');
-  console.log('  Admin: admin@reviewtap.in / admin123');
+  console.log(`  Admin: ${platformAdminEmail} / ${platformAdminPassword}`);
   console.log('  Owner: rahul@cafedelight.com / owner123');
   console.log(`  Business URL: http://cafe-delight.localhost:3000 (or http://localhost:3000?tenant=cafe-delight)`);
 }

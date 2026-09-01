@@ -1,4 +1,4 @@
-import { auth } from './auth';
+import { auth, isPlatformAdminEmail } from './auth';
 import { redirect } from 'next/navigation';
 
 export async function requireAuth() {
@@ -11,9 +11,12 @@ export async function requireAuth() {
 
 export async function requireAdmin() {
   const session = await requireAuth();
-  if ((session.user as any).role !== 'admin') {
+  const sessionEmail = (session.user as any)?.email;
+
+  if ((session.user as any).role !== 'admin' || !isPlatformAdminEmail(sessionEmail)) {
     redirect('/login');
   }
+
   return session;
 }
 
