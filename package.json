@@ -14,6 +14,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "seed:admin": "node scripts/seed-admin.js",
     "db:studio": "prisma studio",
     "firebase:login": "firebase login",
     "firebase:init": "firebase init apphosting",
