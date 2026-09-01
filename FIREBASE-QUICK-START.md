@@ -159,9 +159,7 @@ npx prisma db seed
 
 ### 3. Test Login
 
-**Demo Accounts:**
-- **Owner**: `rahul@cafedelight.com` / `owner123`
-- **Admin**: `admin@reviewtap.in` / `admin123`
+Use the credentials stored in your secure Cloud SQL and Firebase environment variables. Do not keep real admin credentials in source files, docs, or public UI.
 
 ### 4. Configure Custom Domain (Optional)
 

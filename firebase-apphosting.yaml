@@ -41,3 +41,7 @@ environment:
     SMTP_USER: SMTP_USER
     SMTP_PASS: SMTP_PASS
     SMTP_FROM: SMTP_FROM
+
+runConfig:
+  cloudSqlInstances:
+    - reviewtap-235c2:us-central1:reviewtap-db

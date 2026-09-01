@@ -6,8 +6,12 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database...');
 
-  const platformAdminEmail = process.env.PLATFORM_ADMIN_EMAIL || 'reviewtaps77@gmail.com';
-  const platformAdminPassword = process.env.PLATFORM_ADMIN_PASSWORD || 's7eIvLHnJJ-g_iA';
+  const platformAdminEmail = process.env.PLATFORM_ADMIN_EMAIL;
+  const platformAdminPassword = process.env.PLATFORM_ADMIN_PASSWORD;
+
+  if (!platformAdminEmail || !platformAdminPassword) {
+    throw new Error('Missing PLATFORM_ADMIN_EMAIL or PLATFORM_ADMIN_PASSWORD environment variables.');
+  }
 
   // Create admin user
   const adminPassword = await hash(platformAdminPassword, 12);
