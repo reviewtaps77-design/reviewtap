@@ -1,0 +1,43 @@
+# Firebase App Hosting configuration for ReviewTap
+# This is optimized for Next.js 15.3.0 server deployment with Cloud SQL
+
+name: reviewtap
+
+backend:
+  project: reviewtap-prod
+  region: us-central1
+  concurrency: 100
+  cpu: 2
+  memory: 2Gi
+  maxInstances: 10
+  minInstances: 1
+  timeoutSeconds: 300
+  
+  # Uncomment and update with your Cloud SQL instance after setup
+  # cloudSqlInstances:
+  #   - projects/YOUR_PROJECT_ID/instances/reviewtap-db
+
+environment:
+  variables:
+    NODE_ENV: production
+    NEXTAUTH_URL: https://reviewtap.web.app
+    NEXT_PUBLIC_ROOT_DOMAIN: reviewtap.in
+    NEXT_PUBLIC_APP_URL: https://reviewtap.web.app
+    AUTH_TRUST_HOST: "true"
+    NEXT_PUBLIC_FIREBASE_API_KEY: AIzaSyD_-8m2da057iV5mVOxOdUmM5-7jzkRFzo
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: reviewtap-235c2.firebaseapp.com
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: reviewtap-235c2
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: reviewtap-235c2.firebasestorage.app
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "87767739721"
+    NEXT_PUBLIC_FIREBASE_APP_ID: 1:87767739721:web:185560721c301fa4047e98
+    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: G-L6T7P67TCR
+
+  secrets:
+    NEXTAUTH_SECRET: NEXTAUTH_SECRET
+    DATABASE_URL: DATABASE_URL
+    OPENAI_API_KEY: OPENAI_API_KEY
+    SMTP_HOST: SMTP_HOST
+    SMTP_PORT: SMTP_PORT
+    SMTP_USER: SMTP_USER
+    SMTP_PASS: SMTP_PASS
+    SMTP_FROM: SMTP_FROM

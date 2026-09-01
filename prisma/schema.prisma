@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         String   @default("business_owner") // admin | business_owner
+  businessId   String?  @map("business_id")
+  business     Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  resetToken       String?  @map("reset_token")
+  resetTokenExpiry DateTime? @map("reset_token_expiry")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Business {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  ownerName       String   @map("owner_name")
+  ownerEmail      String   @map("owner_email")
+  ownerPhone      String?  @map("owner_phone")
+  googleReviewUrl String?  @map("google_review_url")
+  logoUrl         String?  @map("logo_url")
+  coverUrl        String?  @map("cover_url")
+  description     String?  @db.Text
+  address         String?  @db.Text
+  phone           String?
+  website         String?
+  category        String?
+  brandColor      String   @default("#2563eb") @map("brand_color")
+  status          String   @default("active") // active | suspended | expired
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  users           User[]
+  subscriptions   Subscription[]
+  employees       Employee[]
+  qrCodes         QrCode[]
+  sessions        Session[]
+  scans           Scan[]
+  reviews         Review[]
+  feedback        Feedback[]
+  aiUsage         AiUsage[]
+  employeeRatings EmployeeRating[]
+
+  @@map("businesses")
+}
+
+model Subscription {
+  id         String   @id @default(cuid())
+  businessId String   @map("business_id")
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  plan       String   // monthly | 6month | 12month
+  amount     Int      // in INR (paise or rupees, store as integer)
+  startDate  DateTime @map("start_date")
+  expiryDate DateTime @map("expiry_date")
+  status     String   @default("active") // active | expired | suspended
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([businessId])
+  @@map("subscriptions")
+}
+
+model Employee {
+  id            String   @id @default(cuid())
+  businessId    String   @map("business_id")
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name          String
+  employeeCode  String?  @map("employee_code")
+  role          String?  // waiter, chef, manager, etc.
+  department    String?
+  profileImage  String?  @map("profile_image")
+  slug          String
+  status        String   @default("active") // active | inactive
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  qrCodes         QrCode[]
+  sessions        Session[]
+  scans           Scan[]
+  ratings         EmployeeRating[]
+  reviews         Review[]
+  feedback        Feedback[]
+  aiUsage         AiUsage[]
+
+  @@unique([businessId, slug])
+  @@index([businessId])
+  @@map("employees")
+}
+
+model QrCode {
+  id         String    @id @default(cuid())
+  businessId String    @map("business_id")
+  business   Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId String?   @map("employee_id")
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  type       String    // business_qr | business_nfc | employee_qr | employee_nfc
+  url        String
+  qrData     String?   @map("qr_data") @db.LongText  // SVG/PNG base64
+  status     String    @default("active") // active | disabled
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@index([businessId])
+  @@index([businessId, employeeId])
+  @@map("qr_codes")
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  businessId   String    @map("business_id")
+  business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId   String?   @map("employee_id")
+  employee     Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  sessionToken String    @unique @map("session_token")
+  sourceType   String    @map("source_type") // business_qr | business_nfc | employee_qr | employee_nfc
+  deviceType   String?   @map("device_type") // mobile | tablet | desktop
+  userAgent    String?   @map("user_agent") @db.Text
+  ipHash       String?   @map("ip_hash")
+  startedAt    DateTime  @default(now()) @map("started_at")
+  completedAt  DateTime? @map("completed_at")
+
+  scans           Scan[]
+  employeeRatings EmployeeRating[]
+  reviews         Review[]
+  feedback        Feedback[]
+  aiUsage         AiUsage[]
+
+  @@index([businessId])
+  @@index([businessId, employeeId])
+  @@map("sessions")
+}
+
+model Scan {
+  id         String   @id @default(cuid())
+  businessId String   @map("business_id")
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId String?  @map("employee_id")
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  sessionId  String   @map("session_id")
+  session    Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sourceType String   @map("source_type")
+  deviceInfo String?  @map("device_info") @db.Text
+  ipHash     String?  @map("ip_hash")
+  scannedAt  DateTime @default(now()) @map("scanned_at")
+
+  @@index([businessId])
+  @@index([businessId, employeeId])
+  @@index([sessionId])
+  @@map("scans")
+}
+
+model EmployeeRating {
+  id           String    @id @default(cuid())
+  businessId   String    @map("business_id")
+  business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId   String    @map("employee_id")
+  employee     Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  sessionId    String    @map("session_id")
+  session      Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  behaviour    Int       // 1-5
+  fastness     Int       // 1-5
+  overall      Int       // 1-5
+  comment      String?   @db.Text
+  customerName String?   @map("customer_name")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@index([businessId])
+  @@index([businessId, employeeId])
+  @@index([employeeId])
+  @@index([sessionId])
+  @@map("employee_ratings")
+}
+
+model Review {
+  id             String    @id @default(cuid())
+  businessId     String    @map("business_id")
+  business       Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId     String?   @map("employee_id")
+  employee       Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  sessionId      String    @map("session_id")
+  session        Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  aiGenerated    Boolean   @default(false) @map("ai_generated")
+  aiPromptText   String?   @map("ai_prompt_text") @db.Text
+  aiResponseText String?   @map("ai_response_text") @db.Text
+  editedText     String?   @map("edited_text") @db.Text
+  googleClick    Boolean   @default(false) @map("google_click")
+  googleClickedAt DateTime? @map("google_clicked_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@index([businessId])
+  @@index([businessId, employeeId])
+  @@index([sessionId])
+  @@map("reviews")
+}
+
+model Feedback {
+  id            String   @id @default(cuid())
+  businessId    String   @map("business_id")
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId    String?  @map("employee_id")
+  employee      Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  sessionId     String?  @map("session_id")
+  session       Session? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  customerName  String?  @map("customer_name")
+  customerEmail String?  @map("customer_email")
+  rating        Int      // 1-5
+  liked         String?  @db.Text
+  improve       String?  @db.Text
+  comments      String?  @db.Text
+  status        String   @default("unread") // unread | read | resolved
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([businessId])
+  @@index([businessId, employeeId])
+  @@index([sessionId])
+  @@map("feedback")
+}
+
+model AiUsage {
+  id         String    @id @default(cuid())
+  businessId String    @map("business_id")
+  business   Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId String?   @map("employee_id")
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  sessionId  String?   @map("session_id")
+  session    Session?  @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  tokensUsed Int       @map("tokens_used")
+  model      String    @default("gpt-4o-mini")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@index([businessId])
+  @@index([businessId, employeeId])
+  @@map("ai_usage")
+}
