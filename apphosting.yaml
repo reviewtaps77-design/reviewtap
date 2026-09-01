@@ -5,8 +5,10 @@ runConfig:
   concurrency: 100
   minInstances: 1
   maxInstances: 10
-  cloudSqlInstances:
-    - reviewtap-235c2:us-central1:reviewtap-db
+  vpcAccess:
+    egress: PRIVATE_RANGES_ONLY
+    networkInterfaces:
+      - network: default
 
 env:
   - variable: NODE_ENV
