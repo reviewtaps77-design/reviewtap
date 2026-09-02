@@ -74,7 +74,7 @@ export const employeeSchema = z.object({
 
 export const feedbackSchema = z.object({
   name: z.string().trim().max(120).nullable().optional(),
-  email: emailSchema.nullable().optional(),
+  email: z.string().trim().max(120).nullable().optional(),
   rating: z.number().int().min(1).max(5),
   liked: z.string().trim().max(200).nullable().optional(),
   improve: z.string().trim().max(400).nullable().optional(),
