@@ -40,9 +40,8 @@ export async function generateQRCodeSVG(
 }
 
 export function buildBusinessUrl(slug: string): string {
-  const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'reviewtap.in';
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  return `${protocol}://${slug}.${domain}`;
+  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  return `${appBaseUrl}/biz/${slug}`;
 }
 
 export function buildEmployeeUrl(businessSlug: string, employeeSlug: string): string {

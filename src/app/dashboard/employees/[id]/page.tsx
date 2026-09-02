@@ -70,10 +70,8 @@ export default async function EmployeeDetailPage({
     ? (employee.ratings.reduce((acc, curr) => acc + curr.fastness, 0) / totalRatings).toFixed(1)
     : "N/A";
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "reviewtap.in";
-  const employeeUrl = process.env.NODE_ENV === "production"
-    ? `https://${employee.business.slug}.${rootDomain}/staff/${employee.slug}`
-    : `http://localhost:3000/staff/${employee.slug}?tenant=${employee.business.slug}`;
+  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const employeeUrl = `${appBaseUrl}/biz/${employee.business.slug}/staff/${employee.slug}`;
 
   const qrDataUrl = await generateQRCodeDataUrl(employeeUrl);
 

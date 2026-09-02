@@ -29,7 +29,6 @@ export default async function AdminEmployeesPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "reviewtap.in";
 
   return (
     <div className="space-y-6">
@@ -73,9 +72,7 @@ export default async function AdminEmployeesPage() {
                     ? (emp.ratings.reduce((acc, curr) => acc + curr.overall, 0) / total).toFixed(1)
                     : null;
 
-                  const empUrl = process.env.NODE_ENV === "production"
-                    ? `https://${emp.business.slug}.${rootDomain}/staff/${emp.slug}`
-                    : `http://localhost:3000/staff/${emp.slug}?tenant=${emp.business.slug}`;
+                  const empUrl = `${appBaseUrl}/biz/${emp.business.slug}/staff/${emp.slug}`;
 
                   return (
                     <TableRow key={emp.id} className="hover:bg-slate-50/50">
