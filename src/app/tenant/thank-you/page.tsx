@@ -23,7 +23,7 @@ export default function ThankYouPage() {
 
       <div className="w-full pt-4">
         <Button asChild variant="outline" className="w-full h-12 rounded-2xl border-slate-300 font-medium">
-          <Link href="/tenant">
+          <Link href="./">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
           </Link>
         </Button>

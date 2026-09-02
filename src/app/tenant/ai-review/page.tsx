@@ -75,7 +75,7 @@ function AiReviewContent() {
       }
 
       setTimeout(() => {
-        router.push("/tenant/thank-you");
+        router.push("thank-you");
       }, 1200);
     } catch (err) {
       toast.error("Please copy the text manually and proceed to Google.");

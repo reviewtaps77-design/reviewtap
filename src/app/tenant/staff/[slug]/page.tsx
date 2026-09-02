@@ -35,7 +35,7 @@ export default function EmployeeLandingPage() {
         comment,
       });
       // Navigate to the main tenant page to choose the next step (Google Review, etc)
-      router.push("/tenant");
+      router.push("../../");
     } catch (error) {
       toast.error("Failed to submit rating");
     } finally {

@@ -35,7 +35,7 @@ export default function PrivateFeedbackPage() {
     try {
       await submitPrivateFeedback(formData);
       toast.success("Feedback submitted privately to management");
-      router.push("/tenant/thank-you");
+      router.push("../thank-you");
     } catch (error: any) {
       toast.error(error?.message || "Failed to submit feedback");
     } finally {
@@ -135,7 +135,7 @@ export default function PrivateFeedbackPage() {
             className="w-full text-xs text-slate-500"
             asChild
           >
-            <Link href="/tenant">
+            <Link href="../">
               <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Business Home
             </Link>
           </Button>
