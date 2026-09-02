@@ -118,7 +118,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <form
             action={async () => {
               "use server";
-              await signOut({ redirectTo: "/marketing/login" });
+              await signOut({ redirectTo: "/login" });
             }}
           >
             <button
@@ -157,7 +157,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <form
               action={async () => {
                 "use server";
-                await signOut({ redirectTo: "/marketing/login" });
+                await signOut({ redirectTo: "/login" });
               }}
             >
               <button
