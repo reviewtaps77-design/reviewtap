@@ -26,18 +26,14 @@ export default async function QRNFCPage() {
 
   if (!business) return null;
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "reviewtap.in";
-  const businessUrl = process.env.NODE_ENV === "production"
-    ? `https://${business.slug}.${rootDomain}`
-    : `http://localhost:3000?tenant=${business.slug}`;
+  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const businessUrl = `${appBaseUrl}/biz/${business.slug}`;
 
   const businessQrDataUrl = await generateQRCodeDataUrl(businessUrl);
 
   const employeeQrList = await Promise.all(
     business.employees.map(async (emp) => {
-      const empUrl = process.env.NODE_ENV === "production"
-        ? `https://${business.slug}.${rootDomain}/staff/${emp.slug}`
-        : `http://localhost:3000/staff/${emp.slug}?tenant=${business.slug}`;
+      const empUrl = `${appBaseUrl}/biz/${business.slug}/staff/${emp.slug}`;
       const qrDataUrl = await generateQRCodeDataUrl(empUrl);
       return {
         ...emp,
@@ -83,7 +79,7 @@ export default async function QRNFCPage() {
               className="w-48 h-48 rounded-xl object-contain bg-white p-2 border shadow-sm"
             />
             <p className="text-xs font-mono text-slate-400 mt-2 truncate max-w-[200px]">
-              {business.slug}.{rootDomain}
+              /biz/{business.slug}
             </p>
           </div>
 

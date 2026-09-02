@@ -32,7 +32,6 @@ export default async function BusinessesPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "reviewtap.in";
 
   return (
     <div className="space-y-6">
@@ -81,9 +80,8 @@ export default async function BusinessesPage() {
               ) : (
                 businesses.map((b) => {
                   const sub = b.subscriptions[0];
-                  const publicUrl = process.env.NODE_ENV === "production"
-                    ? `https://${b.slug}.${rootDomain}`
-                    : `http://localhost:3000?tenant=${b.slug}`;
+                  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+                  const publicUrl = `${appBaseUrl}/biz/${b.slug}`;
 
                   return (
                     <TableRow key={b.id} className="hover:bg-slate-50/50">

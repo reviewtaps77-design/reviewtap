@@ -46,12 +46,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const brandColor = business?.brandColor || "#2563eb";
   const activeSub = business?.subscriptions?.[0];
 
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "reviewtap.in";
-  const publicPageUrl = business
-    ? (process.env.NODE_ENV === "production"
-        ? `https://${business.slug}.${rootDomain}`
-        : `http://localhost:3000?tenant=${business.slug}`)
-    : "#";
+  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const publicPageUrl = business ? `${appBaseUrl}/biz/${business.slug}` : "#";
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 font-sans">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useTenantBase } from "@/lib/use-tenant-base";
 import { StarRating } from "@/components/shared/star-rating";
 import { submitEmployeeRating } from "@/actions/rating";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { toast } from "sonner";
 export default function EmployeeLandingPage() {
   const params = useParams();
   const router = useRouter();
+  const tenantBase = useTenantBase();
   const employeeSlug = params.slug as string;
 
   const [ratings, setRatings] = useState({
@@ -35,7 +37,7 @@ export default function EmployeeLandingPage() {
         comment,
       });
       // Navigate to the main tenant page to choose the next step (Google Review, etc)
-      router.push("/tenant");
+      router.push(tenantBase || "/tenant");
     } catch (error) {
       toast.error("Failed to submit rating");
     } finally {

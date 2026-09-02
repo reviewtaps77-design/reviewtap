@@ -1,8 +1,12 @@
 import { CheckCircle2, Heart, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { Button } from "@/components/ui/button";
 
-export default function ThankYouPage() {
+export default async function ThankYouPage() {
+  const headersList = await headers();
+  const tenantBase = headersList.get("x-tenant-base") || "";
+
   return (
     <div className="flex flex-col items-center justify-between flex-1 py-8 text-center animate-in fade-in-50">
       <div className="my-auto space-y-4">
@@ -23,7 +27,7 @@ export default function ThankYouPage() {
 
       <div className="w-full pt-4">
         <Button asChild variant="outline" className="w-full h-12 rounded-2xl border-slate-300 font-medium">
-          <Link href="/tenant">
+          <Link href={tenantBase || "/tenant"}>
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
           </Link>
         </Button>
