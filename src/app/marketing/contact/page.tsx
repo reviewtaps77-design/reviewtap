@@ -26,8 +26,8 @@ export default function ContactPage() {
                   <Mail className="h-7 w-6 text-gray-400" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <a className="hover:text-gray-900" href="mailto:support@reviewtap.com">
-                    support@reviewtap.com
+                  <a className="hover:text-gray-900" href="mailto:reviewtaps77@gmail.com">
+                    reviewtaps77@gmail.com
                   </a>
                 </dd>
               </div>
