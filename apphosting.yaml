@@ -14,11 +14,11 @@ env:
   - variable: NODE_ENV
     value: production
   - variable: NEXTAUTH_URL
-    value: https://reviewtap.web.app
+    value: https://reviewtap--reviewtap-235c2.asia-southeast1.hosted.app
   - variable: NEXT_PUBLIC_ROOT_DOMAIN
     value: reviewtap.in
   - variable: NEXT_PUBLIC_APP_URL
-    value: https://reviewtap.web.app
+    value: https://reviewtap--reviewtap-235c2.asia-southeast1.hosted.app
   - variable: AUTH_TRUST_HOST
     value: "true"
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY

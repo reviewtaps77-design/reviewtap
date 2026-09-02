@@ -22,20 +22,29 @@ export const config = {
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get('host') || '';
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'reviewtap.in';
+  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'reviewtap.in').replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const appHost = process.env.NEXT_PUBLIC_APP_URL ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname : null;
 
   // Remove port for local development
   const currentHost = hostname.replace(/:\d+$/, '');
+  const isLocalHost = currentHost === 'localhost' || currentHost === '127.0.0.1';
+  const validRootHosts = new Set([
+    rootDomain,
+    `www.${rootDomain}`,
+    ...(appHost ? [appHost, `www.${appHost}`] : []),
+    'localhost',
+    '127.0.0.1',
+  ]);
 
   // Extract subdomain
   let subdomain: string | null = null;
 
-  // Production: {slug}.reviewtap.in
+  // Production: {slug}.{rootDomain}
   if (currentHost.endsWith(`.${rootDomain}`)) {
     subdomain = currentHost.replace(`.${rootDomain}`, '');
   }
-  // Local development: use ?tenant= query param, but keep app routes such as /dashboard and /admin on the real app.
-  else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+  // Local dev / app-hosted root domains: use ?tenant= query param, but keep app routes such as /dashboard and /admin on the real app.
+  else if (validRootHosts.has(currentHost)) {
     if (
       url.pathname.startsWith('/dashboard') ||
       url.pathname.startsWith('/admin') ||
