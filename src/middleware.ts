@@ -30,6 +30,21 @@ function normalizeHost(value: string | undefined | null): string | null {
   }
 }
 
+// Suffixes that always indicate a Firebase/Cloud Run-provided platform domain
+// (preview URLs, default hosted.app/web.app URLs, raw Cloud Run URLs, etc.)
+// Any host ending in one of these should get direct path-based routing,
+// same as localhost — never treated as a business/admin subdomain.
+const PLATFORM_HOST_SUFFIXES = [
+  '.hosted.app',
+  '.web.app',
+  '.firebaseapp.com',
+  '.run.app',
+];
+
+function isPlatformHost(host: string): boolean {
+  return PLATFORM_HOST_SUFFIXES.some((suffix) => host.endsWith(suffix));
+}
+
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get('host') || '';
@@ -39,7 +54,10 @@ export default async function middleware(req: NextRequest) {
   // Remove port for local development
   const currentHost = hostname.replace(/:\d+$/, '').toLowerCase();
   const isLocalHost = currentHost === 'localhost' || currentHost === '127.0.0.1';
-  const isHostedAppRoot = currentHost === appHost || currentHost === `www.${appHost}`;
+  const isHostedAppRoot =
+    currentHost === appHost ||
+    currentHost === `www.${appHost}` ||
+    isPlatformHost(currentHost);
   const isAppRoute =
     url.pathname.startsWith('/dashboard') ||
     url.pathname.startsWith('/admin') ||
@@ -55,12 +73,14 @@ export default async function middleware(req: NextRequest) {
   if (currentHost.endsWith(`.${rootDomain}`)) {
     subdomain = currentHost.replace(`.${rootDomain}`, '');
   }
-  // Hosted app root: allow actual app routes through without forcing marketing rewrite.
+  // Hosted app root / any platform-provided domain: allow actual app routes
+  // through directly without forcing marketing rewrite or requiring a subdomain.
   else if (isHostedAppRoot && isAppRoute) {
     return applySecurityHeaders(NextResponse.next());
   }
-  // Local dev / root app domains: use ?tenant= query param, but keep app routes such as /dashboard and /admin on the real app.
-  else if (isLocalHost || currentHost === rootDomain || currentHost === `www.${rootDomain}`) {
+  // Local dev / root app domains: use ?tenant= query param, but keep app routes
+  // such as /dashboard and /admin on the real app.
+  else if (isLocalHost || isHostedAppRoot || currentHost === rootDomain || currentHost === `www.${rootDomain}`) {
     if (isAppRoute) {
       return applySecurityHeaders(NextResponse.next());
     }
