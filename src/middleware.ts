@@ -21,7 +21,6 @@ export const config = {
 
 function normalizeHost(value: string | undefined | null): string | null {
   if (!value) return null;
-
   try {
     const host = value.includes('://') ? new URL(value).hostname : value;
     return host.replace(/:\d+$/, '').replace(/\.$/, '').toLowerCase();
@@ -30,19 +29,28 @@ function normalizeHost(value: string | undefined | null): string | null {
   }
 }
 
-// Suffixes that always indicate a Firebase/Cloud Run-provided platform domain
-// (preview URLs, default hosted.app/web.app URLs, raw Cloud Run URLs, etc.)
-// Any host ending in one of these should get direct path-based routing,
-// same as localhost — never treated as a business/admin subdomain.
-const PLATFORM_HOST_SUFFIXES = [
-  '.hosted.app',
-  '.web.app',
-  '.firebaseapp.com',
-  '.run.app',
-];
+const PLATFORM_HOST_SUFFIXES = ['.hosted.app', '.web.app', '.firebaseapp.com', '.run.app'];
 
 function isPlatformHost(host: string): boolean {
   return PLATFORM_HOST_SUFFIXES.some((suffix) => host.endsWith(suffix));
+}
+
+// Routes that never need a business slug — either no tenant concept
+// (/admin, /api) or the business comes from the logged-in session
+// rather than the URL (/dashboard).
+function isTenantFreeRoute(pathname: string): boolean {
+  return (
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon.ico')
+  );
+}
+
+// Routes that genuinely need a business slug from the URL/subdomain.
+function isTenantScopedRoute(pathname: string): boolean {
+  return pathname.startsWith('/staff/');
 }
 
 export default async function middleware(req: NextRequest) {
@@ -51,74 +59,65 @@ export default async function middleware(req: NextRequest) {
   const rootDomain = normalizeHost(process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'reviewtap.in') || 'reviewtap.in';
   const appHost = normalizeHost(process.env.NEXT_PUBLIC_APP_URL) || 'reviewtap--reviewtap-235c2.asia-southeast1.hosted.app';
 
-  // Remove port for local development
   const currentHost = hostname.replace(/:\d+$/, '').toLowerCase();
   const isLocalHost = currentHost === 'localhost' || currentHost === '127.0.0.1';
   const isHostedAppRoot =
-    currentHost === appHost ||
-    currentHost === `www.${appHost}` ||
-    isPlatformHost(currentHost);
-  const isAppRoute =
-    url.pathname.startsWith('/dashboard') ||
-    url.pathname.startsWith('/admin') ||
-    url.pathname.startsWith('/tenant') ||
-    url.pathname.startsWith('/api') ||
-    url.pathname.startsWith('/_next') ||
-    url.pathname.startsWith('/favicon.ico');
+    currentHost === appHost || currentHost === `www.${appHost}` || isPlatformHost(currentHost);
+  const isRootLikeHost =
+    isLocalHost || isHostedAppRoot || currentHost === rootDomain || currentHost === `www.${rootDomain}`;
 
-  // Extract subdomain
   let subdomain: string | null = null;
+  let effectivePathname = url.pathname;
 
-  // Production: {slug}.{rootDomain}
   if (currentHost.endsWith(`.${rootDomain}`)) {
     subdomain = currentHost.replace(`.${rootDomain}`, '');
-  }
-  // Hosted app root / any platform-provided domain: allow actual app routes
-  // through directly without forcing marketing rewrite or requiring a subdomain.
-  else if (isHostedAppRoot && isAppRoute) {
-    return applySecurityHeaders(NextResponse.next());
-  }
-  // Local dev / root app domains: use ?tenant= query param, but keep app routes
-  // such as /dashboard and /admin on the real app.
-  else if (isLocalHost || isHostedAppRoot || currentHost === rootDomain || currentHost === `www.${rootDomain}`) {
-    if (isAppRoute) {
+  } else if (isRootLikeHost) {
+    if (url.pathname.startsWith('/biz/')) {
+      const segments = url.pathname.replace('/biz/', '').split('/');
+      const businessSlug = segments[0];
+      const rest = segments.slice(1).join('/');
+      subdomain = businessSlug;
+      effectivePathname = rest ? `/${rest}` : '/';
+    } else if (isTenantFreeRoute(url.pathname)) {
       return applySecurityHeaders(NextResponse.next());
+    } else if (isTenantScopedRoute(url.pathname)) {
+      const tenant = url.searchParams.get('tenant');
+      if (!tenant) {
+        const newUrl = new URL('/marketing/login', req.url);
+        return applySecurityHeaders(NextResponse.redirect(newUrl));
+      }
+      subdomain = tenant;
+    } else {
+      subdomain = url.searchParams.get('tenant');
     }
-
-    subdomain = url.searchParams.get('tenant');
   }
 
-  // 1. Admin Portal: admin.reviewtap.in
   if (subdomain === 'admin') {
-    const newUrl = new URL(`/admin${url.pathname}`, req.url);
+    const newUrl = new URL(`/admin${effectivePathname}`, req.url);
     newUrl.search = url.search;
     return applySecurityHeaders(NextResponse.rewrite(newUrl));
   }
 
-  // 2. Main Marketing Site: reviewtap.in or www.reviewtap.in
   if (!subdomain || subdomain === 'www') {
-    const newUrl = new URL(`/marketing${url.pathname}`, req.url);
+    const newUrl = new URL(`/marketing${effectivePathname}`, req.url);
     newUrl.search = url.search;
     return applySecurityHeaders(NextResponse.rewrite(newUrl));
   }
 
-  // 3. Business subdomain: {slug}.reviewtap.in
-  // Set the business slug as a header for downstream use
-  const response = applySecurityHeaders(NextResponse.next());
-
-  // Dashboard routes: {slug}.reviewtap.in/dashboard/*
-  if (url.pathname.startsWith('/dashboard')) {
-    const newUrl = new URL(`/dashboard${url.pathname.replace('/dashboard', '')}`, req.url);
+  if (effectivePathname.startsWith('/dashboard')) {
+    const newUrl = new URL(`/dashboard${effectivePathname.replace('/dashboard', '')}`, req.url);
     newUrl.search = url.search;
     const rewrite = applySecurityHeaders(NextResponse.rewrite(newUrl));
     rewrite.headers.set('x-business-slug', subdomain);
     return rewrite;
   }
 
-  // Staff/Employee routes: {slug}.reviewtap.in/staff/{employee-slug}
-  if (url.pathname.startsWith('/staff/')) {
-    const employeeSlug = url.pathname.replace('/staff/', '').split('/')[0];
-    const newUrl = new URL(`/tenant/staff/${employeeSlug}${url.pathname.replace(`/staff/${employeeSlug}`, '')}`, req.url);
+  if (effectivePathname.startsWith('/staff/')) {
+    const employeeSlug = effectivePathname.replace('/staff/', '').split('/')[0];
+    const newUrl = new URL(
+      `/tenant/staff/${employeeSlug}${effectivePathname.replace(`/staff/${employeeSlug}`, '')}`,
+      req.url
+    );
     newUrl.search = url.search;
     const rewrite = applySecurityHeaders(NextResponse.rewrite(newUrl));
     rewrite.headers.set('x-business-slug', subdomain);
@@ -126,8 +125,7 @@ export default async function middleware(req: NextRequest) {
     return rewrite;
   }
 
-  // Customer-facing tenant page: {slug}.reviewtap.in
-  const newUrl = new URL(`/tenant${url.pathname}`, req.url);
+  const newUrl = new URL(`/tenant${effectivePathname}`, req.url);
   newUrl.search = url.search;
   const rewrite = applySecurityHeaders(NextResponse.rewrite(newUrl));
   rewrite.headers.set('x-business-slug', subdomain);

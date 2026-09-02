@@ -65,7 +65,7 @@ export default async function AdminLayout({
 
         <div className="p-4 border-t border-slate-800">
           <Link
-            href="/login"
+            href="/marketing/login"
             className="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors p-2"
           >
             <LogOut className="h-4 w-4" />
