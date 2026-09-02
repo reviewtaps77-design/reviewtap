@@ -10,6 +10,36 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendContactFormEmail({
+  name,
+  businessName,
+  email,
+  phone,
+  message,
+}: {
+  name: string;
+  businessName: string;
+  email: string;
+  phone: string;
+  message: string;
+}) {
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to: 'reviewtaps77@gmail.com',
+    replyTo: email,
+    subject: `ReviewTap Contact Form - ${businessName}`,
+    text: [
+      `Full Name: ${name}`,
+      `Business Name: ${businessName}`,
+      `Email: ${email}`,
+      `Phone Number: ${phone}`,
+      '',
+      'Message:',
+      message,
+    ].join('\n'),
+  });
+}
+
 export async function sendWelcomeEmail({
   to,
   businessName,

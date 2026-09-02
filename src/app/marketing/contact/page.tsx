@@ -1,10 +1,16 @@
-import { Mail, Phone, MapPin } from 'lucide-react';
+'use client';
+
+import { useActionState } from 'react';
+import { Mail, Phone, MapPin, Loader2 } from 'lucide-react';
+import { submitContactForm } from '@/actions/contact';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
 export default function ContactPage() {
+  const [state, action, isPending] = useActionState(submitContactForm, null);
+
   return (
     <div className="bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -47,7 +53,7 @@ export default function ContactPage() {
 
           {/* Contact Form */}
           <div className="bg-gray-50 p-8 sm:p-10 rounded-3xl border border-gray-200">
-            <form action="#" method="POST" className="space-y-6">
+            <form action={action} className="space-y-6">
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <div className="mt-2">
@@ -83,8 +89,19 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full mt-8" size="lg">
-                Send Message
+              {state?.success && (
+                <p className="text-sm font-medium text-green-700" role="status">
+                  Your message was sent successfully.
+                </p>
+              )}
+              {state?.error && (
+                <p className="text-sm font-medium text-red-700" role="alert">
+                  {state.error}
+                </p>
+              )}
+
+              <Button type="submit" className="w-full mt-8" size="lg" disabled={isPending}>
+                {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending...</> : 'Send Message'}
               </Button>
             </form>
           </div>
