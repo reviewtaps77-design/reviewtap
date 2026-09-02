@@ -28,6 +28,7 @@ export default async function AdminEmployeesPage() {
     },
     orderBy: { createdAt: "desc" },
   });
+  const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 
   return (
