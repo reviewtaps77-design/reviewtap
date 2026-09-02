@@ -68,6 +68,7 @@ export default async function middleware(req: NextRequest) {
 
   let subdomain: string | null = null;
   let effectivePathname = url.pathname;
+  let tenantBase = '';
 
   if (currentHost.endsWith(`.${rootDomain}`)) {
     subdomain = currentHost.replace(`.${rootDomain}`, '');
@@ -78,6 +79,7 @@ export default async function middleware(req: NextRequest) {
       const rest = segments.slice(1).join('/');
       subdomain = businessSlug;
       effectivePathname = rest ? `/${rest}` : '/';
+      tenantBase = `/biz/${businessSlug}`;
     } else if (isTenantFreeRoute(url.pathname)) {
       return applySecurityHeaders(NextResponse.next());
     } else if (isTenantScopedRoute(url.pathname)) {
@@ -122,6 +124,7 @@ export default async function middleware(req: NextRequest) {
     const rewrite = applySecurityHeaders(NextResponse.rewrite(newUrl));
     rewrite.headers.set('x-business-slug', subdomain);
     rewrite.headers.set('x-employee-slug', employeeSlug);
+    rewrite.headers.set('x-tenant-base', tenantBase);
     return rewrite;
   }
 
@@ -129,5 +132,6 @@ export default async function middleware(req: NextRequest) {
   newUrl.search = url.search;
   const rewrite = applySecurityHeaders(NextResponse.rewrite(newUrl));
   rewrite.headers.set('x-business-slug', subdomain);
+  rewrite.headers.set('x-tenant-base', tenantBase);
   return rewrite;
 }

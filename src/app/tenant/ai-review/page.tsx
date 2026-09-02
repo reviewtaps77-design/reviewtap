@@ -7,9 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Sparkles, Copy, ExternalLink, ArrowLeft, Check, ThumbsUp } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTenantBase } from "@/lib/use-tenant-base";
 
 function AiReviewContent() {
   const router = useRouter();
+  const tenantBase = useTenantBase();
   const searchParams = useSearchParams();
   const employeeSlug = searchParams.get("employee") || undefined;
 
@@ -75,7 +77,7 @@ function AiReviewContent() {
       }
 
       setTimeout(() => {
-        router.push("thank-you");
+        router.push(`${tenantBase}/thank-you`);
       }, 1200);
     } catch (err) {
       toast.error("Please copy the text manually and proceed to Google.");
