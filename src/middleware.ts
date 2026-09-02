@@ -19,22 +19,34 @@ export const config = {
   matcher: ['/((?!api/|_next/|_static/|_vercel|favicon.ico|images/|fonts/|[\\w-]+\\.\\w+).*)'],
 };
 
+function normalizeHost(value: string | undefined | null): string | null {
+  if (!value) return null;
+
+  try {
+    const host = value.includes('://') ? new URL(value).hostname : value;
+    return host.replace(/:\d+$/, '').replace(/\.$/, '').toLowerCase();
+  } catch {
+    return value.replace(/:\d+$/, '').replace(/\.$/, '').toLowerCase();
+  }
+}
+
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
   const hostname = req.headers.get('host') || '';
-  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'reviewtap.in').replace(/^https?:\/\//, '').replace(/\/$/, '');
-  const appHost = process.env.NEXT_PUBLIC_APP_URL ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname : null;
+  const rootDomain = normalizeHost(process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'reviewtap.in') || 'reviewtap.in';
+  const appHost = normalizeHost(process.env.NEXT_PUBLIC_APP_URL) || 'reviewtap--reviewtap-235c2.asia-southeast1.hosted.app';
 
   // Remove port for local development
-  const currentHost = hostname.replace(/:\d+$/, '');
+  const currentHost = hostname.replace(/:\d+$/, '').toLowerCase();
   const isLocalHost = currentHost === 'localhost' || currentHost === '127.0.0.1';
-  const validRootHosts = new Set([
-    rootDomain,
-    `www.${rootDomain}`,
-    ...(appHost ? [appHost, `www.${appHost}`] : []),
-    'localhost',
-    '127.0.0.1',
-  ]);
+  const isHostedAppRoot = currentHost === appHost || currentHost === `www.${appHost}`;
+  const isAppRoute =
+    url.pathname.startsWith('/dashboard') ||
+    url.pathname.startsWith('/admin') ||
+    url.pathname.startsWith('/tenant') ||
+    url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/_next') ||
+    url.pathname.startsWith('/favicon.ico');
 
   // Extract subdomain
   let subdomain: string | null = null;
@@ -43,16 +55,13 @@ export default async function middleware(req: NextRequest) {
   if (currentHost.endsWith(`.${rootDomain}`)) {
     subdomain = currentHost.replace(`.${rootDomain}`, '');
   }
-  // Local dev / app-hosted root domains: use ?tenant= query param, but keep app routes such as /dashboard and /admin on the real app.
-  else if (validRootHosts.has(currentHost)) {
-    if (
-      url.pathname.startsWith('/dashboard') ||
-      url.pathname.startsWith('/admin') ||
-      url.pathname.startsWith('/tenant') ||
-      url.pathname.startsWith('/api') ||
-      url.pathname.startsWith('/_next') ||
-      url.pathname.startsWith('/favicon.ico')
-    ) {
+  // Hosted app root: allow actual app routes through without forcing marketing rewrite.
+  else if (isHostedAppRoot && isAppRoute) {
+    return applySecurityHeaders(NextResponse.next());
+  }
+  // Local dev / root app domains: use ?tenant= query param, but keep app routes such as /dashboard and /admin on the real app.
+  else if (isLocalHost || currentHost === rootDomain || currentHost === `www.${rootDomain}`) {
+    if (isAppRoute) {
       return applySecurityHeaders(NextResponse.next());
     }
 
