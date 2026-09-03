@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { ImagePlus } from "lucide-react";
+import { updateBusinessImage } from "@/actions/business";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -88,6 +89,8 @@ export function BusinessImageUpload({
     setProgress(0);
     try {
       const url = await uploadImage(file, `businesses/${businessId}/${kind}`, kind === "logo" ? 512 : 1600, setProgress);
+      const saved = await updateBusinessImage(kind, url);
+      if (!saved.success) throw new Error(saved.error || "Unable to save the uploaded image.");
       if (kind === "logo") setLogo(url);
       else setCover(url);
     } catch (uploadError) {

@@ -34,7 +34,12 @@ export default async function TenantLayout({
         ...(business?.coverUrl ? { backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.38), rgba(15, 23, 42, 0.38)), url(${business.coverUrl})` } : {}),
       } as React.CSSProperties}
     >
-      <main className="flex-1 w-full max-w-md mx-auto bg-white shadow-xl sm:my-6 sm:rounded-3xl sm:border sm:border-slate-200/80 flex flex-col relative overflow-hidden">
+      <main
+        className="flex-1 w-full max-w-md mx-auto bg-white/95 shadow-xl sm:my-6 sm:rounded-3xl sm:border sm:border-slate-200/80 flex flex-col relative overflow-hidden bg-cover bg-center"
+        style={business?.coverUrl ? {
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.94)), url(${business.coverUrl})`,
+        } : undefined}
+      >
         {/* Top Accent Bar */}
         <div
           className="h-2 w-full"
