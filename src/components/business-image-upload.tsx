@@ -16,6 +16,9 @@ const firebaseConfig = {
 };
 
 function getFirebaseStorage() {
+  if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.storageBucket) {
+    throw new Error("Firebase Storage is not configured for this deployment.");
+  }
   const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   return getStorage(app);
 }
@@ -38,7 +41,10 @@ async function uploadImage(file: File, path: string, maxWidth: number, onProgres
   if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
   if (file.size > 5 * 1024 * 1024) throw new Error("Images must be smaller than 5 MB.");
   const blob = await compressImage(file, maxWidth);
-  const imageRef = ref(getFirebaseStorage(), `${path}/${crypto.randomUUID()}.webp`);
+  const imageId = typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const imageRef = ref(getFirebaseStorage(), `${path}/${imageId}.webp`);
   const upload = uploadBytesResumable(imageRef, blob, { contentType: "image/webp" });
 
   return new Promise<string>((resolve, reject) => {

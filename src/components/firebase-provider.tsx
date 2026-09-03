@@ -18,13 +18,19 @@ export function FirebaseProvider() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    try {
+      const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-    isSupported().then((supported) => {
-      if (supported) {
-        getAnalytics(app);
-      }
-    });
+      isSupported()
+        .then((supported) => {
+          if (supported) getAnalytics(app);
+        })
+        .catch(() => {
+          // Analytics is optional and must not prevent the app from loading.
+        });
+    } catch {
+      // Firebase Analytics is optional for the application UI.
+    }
   }, []);
 
   return null;
