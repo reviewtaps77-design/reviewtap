@@ -8,7 +8,8 @@ import {
   Users, 
   LogOut, 
   ShieldAlert,
-  ExternalLink
+  ExternalLink,
+  Sparkles
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -60,6 +61,13 @@ export default async function AdminLayout({
           >
             <Users className="h-4 w-4 text-slate-400" />
             Global Staff Directory
+          </Link>
+          <Link
+            href="/admin/ai-usage"
+            className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-300 rounded-xl hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            <Sparkles className="h-4 w-4 text-slate-400" />
+            AI Usage
           </Link>
         </nav>
 

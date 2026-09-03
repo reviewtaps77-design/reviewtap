@@ -23,27 +23,11 @@ const features = [
 const plans = [
   {
     name: 'Monthly',
-    price: '₹1,500',
+    price: '₹2,000',
     period: '/month',
     description: 'Perfect for trying out ReviewTap at your business location.',
     features: features,
     badge: null,
-  },
-  {
-    name: '6 Months',
-    price: '₹7,000',
-    period: '/6 months',
-    description: 'Commit longer and save on setup costs.',
-    features: features,
-    badge: 'Save ₹2,000',
-  },
-  {
-    name: '12 Months',
-    price: '₹11,000',
-    period: '/year',
-    description: 'Our most popular plan for sustained reputation growth.',
-    features: features,
-    badge: 'BEST VALUE - Save ₹7,000',
     popular: true,
   }
 ];
@@ -74,7 +58,7 @@ export default function PricingPage() {
           All plans include complete access to every feature, unlimited scans, AI review generation, and individual staff QR codes.
         </p>
 
-        <div className="isolate mx-auto mt-14 grid max-w-md grid-cols-1 gap-y-8 sm:mt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:items-stretch">
+        <div className="isolate mx-auto mt-14 grid max-w-md grid-cols-1 gap-y-8 sm:mt-16">
           {plans.map((plan) => (
             <Card
               key={plan.name}

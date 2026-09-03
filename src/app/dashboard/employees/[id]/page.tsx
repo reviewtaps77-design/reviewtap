@@ -228,7 +228,7 @@ export default async function EmployeeDetailPage({
                   No ratings submitted for this employee yet.
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="max-h-[34rem] space-y-3 overflow-y-auto pr-2">
                   {employee.ratings.map((rating) => (
                     <div
                       key={rating.id}

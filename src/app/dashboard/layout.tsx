@@ -10,7 +10,7 @@ import {
   QrCode, 
   Building2, 
   CreditCard, 
-  Sparkles,
+  CalendarCheck,
   ExternalLink,
   ShieldCheck,
   LogOut
@@ -23,7 +23,7 @@ const navItems = [
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/feedback", label: "Private Feedback", icon: MessageSquare },
   { href: "/dashboard/qr-nfc", label: "QR & NFC Codes", icon: QrCode },
-  { href: "/dashboard/ai-usage", label: "AI Usage", icon: Sparkles },
+  { href: "/dashboard/attendance", label: "Staff Attendance", icon: CalendarCheck },
   { href: "/dashboard/profile", label: "Business Profile", icon: Building2 },
   { href: "/dashboard/subscription", label: "Subscription", icon: CreditCard },
 ];

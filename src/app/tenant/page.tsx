@@ -7,6 +7,7 @@ export default async function TenantLandingPage() {
   const headersList = await headers();
   const slug = headersList.get("x-business-slug");
   const tenantBase = headersList.get("x-tenant-base") || "";
+  const employeeSlug = headersList.get("x-employee-slug");
 
   if (!slug) {
     return (
@@ -30,15 +31,19 @@ export default async function TenantLandingPage() {
     );
   }
 
+  const employee = employeeSlug
+    ? await db.employee.findUnique({ where: { businessId_slug: { businessId: business.id, slug: employeeSlug } } })
+    : null;
+
   const brandColor = business.brandColor || "#2563eb";
 
   return (
     <div className="flex flex-col items-center justify-between flex-1 space-y-6 py-2">
       {/* Business Header */}
       <div className="text-center space-y-3 w-full">
-        {business.logoUrl ? (
+        {business.logoUrl || business.coverUrl ? (
           <img
-            src={business.logoUrl}
+            src={business.logoUrl || business.coverUrl || ""}
             alt={`${business.name} logo`}
             className="w-20 h-20 mx-auto rounded-2xl object-cover shadow-md border border-slate-100"
           />
@@ -65,6 +70,9 @@ export default async function TenantLandingPage() {
               <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
               <span className="truncate max-w-[260px]">{business.address}</span>
             </p>
+          )}
+          {employee && (
+            <p className="text-sm font-semibold text-slate-600 mt-2">Serving you today: {employee.name}</p>
           )}
         </div>
 
@@ -104,7 +112,7 @@ export default async function TenantLandingPage() {
 
         {/* CTA 2: AI Review Assistant */}
         <Link
-          href={`${tenantBase}/ai-review`}
+          href={`${tenantBase}/ai-review${employeeSlug ? `?employee=${encodeURIComponent(employeeSlug)}` : ""}`}
           className="group relative flex items-center p-4 w-full rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 mr-4 shrink-0">
@@ -125,7 +133,7 @@ export default async function TenantLandingPage() {
 
         {/* CTA 3: Private Feedback */}
         <Link
-          href={`${tenantBase}/feedback`}
+          href={`${tenantBase}/feedback${employeeSlug ? `?employee=${encodeURIComponent(employeeSlug)}` : ""}`}
           className="group flex items-center p-4 w-full bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-2xl transition-all duration-200 border border-slate-200/80 shadow-sm active:scale-[0.98]"
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-200/80 mr-4 text-slate-600 shrink-0">

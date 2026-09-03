@@ -47,16 +47,16 @@ export async function createBusinessAndOwner(prevState: any, formData: FormData)
 
     let plan: SubscriptionPlan = "monthly";
     let months = 1;
-    let amount = 1500;
+    let amount = 2000;
 
     if (rawPlan === "6month" || rawPlan === "6-month") {
       plan = "6month";
       months = 6;
-      amount = 7000;
+      amount = 12000;
     } else if (rawPlan === "12month" || rawPlan === "12-month") {
       plan = "12month";
       months = 12;
-      amount = 11000;
+      amount = 24000;
     }
 
     const startDate = new Date();

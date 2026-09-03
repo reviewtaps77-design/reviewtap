@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
 import { FirebaseProvider } from '@/components/firebase-provider';
+import favicon from '../../icon.jpeg';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
   },
   description:
     'ReviewTap helps businesses collect authentic Google reviews through QR codes, NFC cards, and AI-powered review assistance. Track employee performance and grow your online reputation.',
+  icons: {
+    icon: favicon.src,
+  },
   keywords: [
     'QR review card',
     'NFC review',

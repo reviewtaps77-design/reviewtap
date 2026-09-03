@@ -28,8 +28,11 @@ export default async function TenantLayout({
 
   return (
     <div
-      className="min-h-screen bg-slate-100 flex flex-col justify-between"
-      style={{ "--tenant-brand": brandColor } as React.CSSProperties}
+      className="min-h-screen bg-slate-100 flex flex-col justify-between bg-cover bg-center"
+      style={{
+        "--tenant-brand": brandColor,
+        ...(business?.coverUrl ? { backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.38), rgba(15, 23, 42, 0.38)), url(${business.coverUrl})` } : {}),
+      } as React.CSSProperties}
     >
       <main className="flex-1 w-full max-w-md mx-auto bg-white shadow-xl sm:my-6 sm:rounded-3xl sm:border sm:border-slate-200/80 flex flex-col relative overflow-hidden">
         {/* Top Accent Bar */}

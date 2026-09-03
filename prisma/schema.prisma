@@ -54,6 +54,7 @@ model Business {
   feedback        Feedback[]
   aiUsage         AiUsage[]
   employeeRatings EmployeeRating[]
+  attendance      Attendance[]
 
   @@map("businesses")
 }
@@ -95,6 +96,7 @@ model Employee {
   reviews         Review[]
   feedback        Feedback[]
   aiUsage         AiUsage[]
+  attendance      Attendance[]
 
   @@unique([businessId, slug])
   @@index([businessId])
@@ -246,4 +248,20 @@ model AiUsage {
   @@index([businessId])
   @@index([businessId, employeeId])
   @@map("ai_usage")
+}
+
+model Attendance {
+  id         String   @id @default(cuid())
+  businessId String   @map("business_id")
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  employeeId String   @map("employee_id")
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date       DateTime @db.Date
+  status     String   @default("present") // present | absent | leave
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([businessId, employeeId, date])
+  @@index([businessId, date])
+  @@map("attendance")
 }

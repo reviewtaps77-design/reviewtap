@@ -176,7 +176,7 @@ export default async function ProfilePage() {
 
               <div className="space-y-1.5">
                 <Label htmlFor="logoUrl" className="text-xs font-semibold text-slate-700">
-                  Logo Image URL
+                  Business Image / Icon URL
                 </Label>
                 <Input
                   id="logoUrl"
@@ -185,6 +185,20 @@ export default async function ProfilePage() {
                   placeholder="https://yourdomain.com/logo.png"
                   className="rounded-xl"
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-1.5">
+                <Label htmlFor="coverUrl" className="text-xs font-semibold text-slate-700">
+                  Customer Page Background Image URL
+                </Label>
+                <Input
+                  id="coverUrl"
+                  name="coverUrl"
+                  defaultValue={business.coverUrl || ""}
+                  placeholder="https://yourdomain.com/business-cover.jpg"
+                  className="rounded-xl"
+                />
+                <p className="text-[11px] text-slate-400">This image appears behind your business details on the customer page.</p>
               </div>
             </div>
 

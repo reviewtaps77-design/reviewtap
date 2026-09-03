@@ -59,7 +59,7 @@ export interface AnalyticsFilter {
 }
 
 export const PLAN_DETAILS: Record<SubscriptionPlan, { name: string; amount: number; duration: string }> = {
-  monthly: { name: 'Monthly', amount: 1500, duration: '1 Month' },
-  '6month': { name: '6 Months', amount: 7000, duration: '6 Months' },
-  '12month': { name: '12 Months', amount: 11000, duration: '12 Months' },
+  monthly: { name: 'Monthly', amount: 2000, duration: '1 Month' },
+  '6month': { name: '6 Months', amount: 12000, duration: '6 Months' },
+  '12month': { name: '12 Months', amount: 24000, duration: '12 Months' },
 };
