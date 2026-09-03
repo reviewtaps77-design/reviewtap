@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { ImagePlus } from "lucide-react";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,12 +19,35 @@ function getFirebaseStorage() {
   return getStorage(app);
 }
 
-async function uploadImage(file: File, path: string) {
+async function compressImage(file: File, maxWidth: number) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxWidth / bitmap.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.82));
+  if (!blob) throw new Error("Unable to process this image.");
+  return blob;
+}
+
+async function uploadImage(file: File, path: string, maxWidth: number, onProgress: (progress: number) => void) {
   if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
   if (file.size > 5 * 1024 * 1024) throw new Error("Images must be smaller than 5 MB.");
-  const imageRef = ref(getFirebaseStorage(), `${path}/${crypto.randomUUID()}-${file.name}`);
-  const snapshot = await uploadBytes(imageRef, file, { contentType: file.type });
-  return getDownloadURL(snapshot.ref);
+  const blob = await compressImage(file, maxWidth);
+  const imageRef = ref(getFirebaseStorage(), `${path}/${crypto.randomUUID()}.webp`);
+  const upload = uploadBytesResumable(imageRef, blob, { contentType: "image/webp" });
+
+  return new Promise<string>((resolve, reject) => {
+    upload.on(
+      "state_changed",
+      (snapshot) => onProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)),
+      reject,
+      async () => resolve(await getDownloadURL(upload.snapshot.ref)),
+    );
+  });
 }
 
 export function BusinessImageUpload({
@@ -39,20 +62,23 @@ export function BusinessImageUpload({
   const [logo, setLogo] = useState(logoUrl);
   const [cover, setCover] = useState(coverUrl);
   const [uploading, setUploading] = useState<"logo" | "cover" | null>(null);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
 
   const handleUpload = async (kind: "logo" | "cover", file?: File) => {
     if (!file) return;
     setError("");
     setUploading(kind);
+    setProgress(0);
     try {
-      const url = await uploadImage(file, `businesses/${businessId}/${kind}`);
+      const url = await uploadImage(file, `businesses/${businessId}/${kind}`, kind === "logo" ? 512 : 1600, setProgress);
       if (kind === "logo") setLogo(url);
       else setCover(url);
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Image upload failed.");
     } finally {
       setUploading(null);
+      setProgress(0);
     }
   };
 
@@ -64,7 +90,7 @@ export function BusinessImageUpload({
         <p className="text-xs font-semibold text-slate-700">Business Image / Icon</p>
         <label className="flex min-h-28 cursor-pointer items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 hover:border-primary">
           {logo ? <img src={logo} alt="Business image preview" className="h-20 w-20 rounded-lg object-cover" /> : <ImagePlus className="h-8 w-8 text-slate-400" />}
-          <span className="text-xs text-slate-500">{uploading === "logo" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Choose image from device"}</span>
+          <span className="text-xs text-slate-500">{uploading === "logo" ? `Uploading ${progress}%` : "Choose image from device"}</span>
           <input type="file" accept="image/*" className="sr-only" onChange={(event) => handleUpload("logo", event.target.files?.[0])} disabled={uploading !== null} />
         </label>
       </div>
@@ -72,7 +98,7 @@ export function BusinessImageUpload({
         <p className="text-xs font-semibold text-slate-700">Customer Page Background</p>
         <label className="flex min-h-28 cursor-pointer items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 hover:border-primary">
           {cover ? <img src={cover} alt="Customer page background preview" className="h-20 w-28 rounded-lg object-cover" /> : <ImagePlus className="h-8 w-8 text-slate-400" />}
-          <span className="text-xs text-slate-500">{uploading === "cover" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Choose image from device"}</span>
+          <span className="text-xs text-slate-500">{uploading === "cover" ? `Uploading ${progress}%` : "Choose image from device"}</span>
           <input type="file" accept="image/*" className="sr-only" onChange={(event) => handleUpload("cover", event.target.files?.[0])} disabled={uploading !== null} />
         </label>
       </div>
