@@ -4,7 +4,6 @@ import { useState } from "react";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { ImagePlus } from "lucide-react";
-import { saveBusinessImage } from "@/actions/business";
 import { useRouter } from "next/navigation";
 
 const firebaseConfig = {
@@ -97,8 +96,13 @@ export function BusinessImageUpload({
     setProgress(0);
     try {
       const url = await uploadImage(file, `businesses/${businessId}/${kind}`, kind === "logo" ? 512 : 1600, setProgress);
-      const saved = await saveBusinessImage(kind, url);
-      if (!saved.success) throw new Error(saved.error || "Unable to save the uploaded image.");
+      const response = await fetch("/api/business/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind, url }),
+      });
+      const saved = await response.json();
+      if (!response.ok || !saved.success) throw new Error(saved.error || "Unable to save the uploaded image.");
       if (kind === "logo") {
         setLogo(url);
       } else {
