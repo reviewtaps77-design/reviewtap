@@ -62,26 +62,25 @@ export async function updateBusinessProfile(formData: FormData) {
 }
 
 export async function saveBusinessImage(kind: "logo" | "cover", url: string) {
+  const session = await requireOwner();
+  const businessId = getSessionBusinessId(session);
+  const imageUrl = sanitizeUrl(url);
+
+  if (!imageUrl) return { success: false, error: "Invalid uploaded image URL." };
+
   try {
-    const session = await requireOwner();
-    const businessId = getSessionBusinessId(session);
-
-    if (!url || !/^https:\/\//i.test(url) || url.length > 2048) {
-      return { success: false, error: "Invalid uploaded image URL." };
-    }
-
     await db.business.update({
       where: { id: businessId },
-      data: kind === "logo" ? { logoUrl: url } : { coverUrl: url },
+      data: kind === "logo" ? { logoUrl: imageUrl } : { coverUrl: imageUrl },
     });
-
-    revalidatePath("/dashboard/profile");
-    revalidatePath("/dashboard");
-    revalidatePath("/tenant");
-    return { success: true };
   } catch (error) {
     console.error("Failed to save business image:", error);
-    return { success: false, error: "The image uploaded, but could not be saved to the business profile." };
+    return { success: false, error: "The image uploaded, but the database update failed." };
   }
+
+  revalidatePath("/dashboard/profile");
+  revalidatePath("/dashboard");
+  revalidatePath("/tenant");
+  return { success: true };
 }
 
