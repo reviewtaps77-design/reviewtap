@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { updateBusinessProfile } from "@/actions/business";
+import { BusinessImageUpload } from "@/components/business-image-upload";
 import { Building2, Info, Star, ExternalLink, Palette, MapPin, Globe, Phone } from "lucide-react";
 
 export const metadata = {
@@ -174,32 +175,11 @@ export default async function ProfilePage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="logoUrl" className="text-xs font-semibold text-slate-700">
-                  Business Image / Icon URL
-                </Label>
-                <Input
-                  id="logoUrl"
-                  name="logoUrl"
-                  defaultValue={business.logoUrl || ""}
-                  placeholder="https://yourdomain.com/logo.png"
-                  className="rounded-xl"
-                />
-              </div>
-
-              <div className="md:col-span-2 space-y-1.5">
-                <Label htmlFor="coverUrl" className="text-xs font-semibold text-slate-700">
-                  Customer Page Background Image URL
-                </Label>
-                <Input
-                  id="coverUrl"
-                  name="coverUrl"
-                  defaultValue={business.coverUrl || ""}
-                  placeholder="https://yourdomain.com/business-cover.jpg"
-                  className="rounded-xl"
-                />
-                <p className="text-[11px] text-slate-400">This image appears behind your business details on the customer page.</p>
-              </div>
+              <BusinessImageUpload
+                businessId={business.id}
+                logoUrl={business.logoUrl || ""}
+                coverUrl={business.coverUrl || ""}
+              />
             </div>
 
             <div className="pt-4 border-t border-slate-100 flex justify-end">
