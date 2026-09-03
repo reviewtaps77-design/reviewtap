@@ -1,9 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { ImagePlus } from "lucide-react";
+import { saveBusinessImage } from "@/actions/business";
+import { useRouter } from "next/navigation";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -79,10 +81,9 @@ export function BusinessImageUpload({
   logoUrl: string;
   coverUrl: string;
 }) {
+  const router = useRouter();
   const [logo, setLogo] = useState(logoUrl);
   const [cover, setCover] = useState(coverUrl);
-  const logoInput = useRef<HTMLInputElement>(null);
-  const coverInput = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<"logo" | "cover" | null>(null);
   const [processing, setProcessing] = useState<"logo" | "cover" | null>(null);
   const [progress, setProgress] = useState(0);
@@ -96,16 +97,14 @@ export function BusinessImageUpload({
     setProgress(0);
     try {
       const url = await uploadImage(file, `businesses/${businessId}/${kind}`, kind === "logo" ? 512 : 1600, setProgress);
+      const saved = await saveBusinessImage(kind, url);
+      if (!saved.success) throw new Error(saved.error || "Unable to save the uploaded image.");
       if (kind === "logo") {
         setLogo(url);
-        if (logoInput.current) logoInput.current.value = url;
       } else {
         setCover(url);
-        if (coverInput.current) coverInput.current.value = url;
       }
-      const profileForm = document.querySelector<HTMLFormElement>("form[data-business-profile]");
-      if (!profileForm) throw new Error("Business profile form was not found.");
-      profileForm.requestSubmit();
+      router.refresh();
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Image upload failed.");
     } finally {
@@ -117,8 +116,6 @@ export function BusinessImageUpload({
 
   return (
     <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
-      <input ref={logoInput} type="hidden" name="logoUrl" defaultValue={logo} />
-      <input ref={coverInput} type="hidden" name="coverUrl" defaultValue={cover} />
       <div className="space-y-2">
         <p className="text-xs font-semibold text-slate-700">Business Image / Icon</p>
         <label className="flex min-h-28 cursor-pointer items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 hover:border-primary">
