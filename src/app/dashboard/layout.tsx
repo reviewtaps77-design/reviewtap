@@ -54,12 +54,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex shrink-0">
         <div className="p-5 border-b border-slate-100 flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-sm"
-            style={{ backgroundColor: brandColor }}
-          >
-            {businessName.slice(0, 2).toUpperCase()}
-          </div>
+          {business?.logoUrl ? (
+            <img src={business.logoUrl} alt={`${businessName} logo`} className="w-10 h-10 rounded-xl object-cover shadow-sm" />
+          ) : (
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-sm"
+              style={{ backgroundColor: brandColor }}
+            >
+              {businessName.slice(0, 2).toUpperCase()}
+            </div>
+          )}
           <div className="overflow-hidden">
             <h1 className="text-sm font-bold text-slate-900 truncate">{businessName}</h1>
             <p className="text-[11px] text-slate-400 font-medium">Owner Portal</p>
@@ -133,12 +137,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* Mobile Header */}
         <header className="md:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs"
-              style={{ backgroundColor: brandColor }}
-            >
-              {businessName.slice(0, 2).toUpperCase()}
-            </div>
+            {business?.logoUrl ? (
+              <img src={business.logoUrl} alt={`${businessName} logo`} className="w-8 h-8 rounded-lg object-cover" />
+            ) : (
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs"
+                style={{ backgroundColor: brandColor }}
+              >
+                {businessName.slice(0, 2).toUpperCase()}
+              </div>
+            )}
             <h1 className="text-sm font-bold truncate max-w-[180px]">{businessName}</h1>
           </div>
           <div className="flex items-center gap-3">
