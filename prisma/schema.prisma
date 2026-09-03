@@ -32,8 +32,8 @@ model Business {
   ownerEmail      String   @map("owner_email")
   ownerPhone      String?  @map("owner_phone")
   googleReviewUrl String?  @map("google_review_url")
-  logoUrl         String?  @map("logo_url")
-  coverUrl        String?  @map("cover_url")
+  logoUrl         String?  @db.Text @map("logo_url")
+  coverUrl        String?  @db.Text @map("cover_url")
   description     String?  @db.Text
   address         String?  @db.Text
   phone           String?
