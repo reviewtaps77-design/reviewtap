@@ -41,12 +41,26 @@ async function uploadImage(file: File, path: string, maxWidth: number, onProgres
   const upload = uploadBytesResumable(imageRef, blob, { contentType: "image/webp" });
 
   return new Promise<string>((resolve, reject) => {
-    upload.on(
+    const unsubscribe = upload.on(
       "state_changed",
       (snapshot) => onProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)),
-      reject,
-      async () => resolve(await getDownloadURL(upload.snapshot.ref)),
+      (uploadError) => {
+        clearTimeout(timeoutId);
+        unsubscribe();
+        reject(new Error(uploadError.code === "storage/unauthorized"
+          ? "Firebase Storage rejected the upload. Check your Storage rules."
+          : uploadError.message));
+      },
+      async () => {
+        clearTimeout(timeoutId);
+        unsubscribe();
+        resolve(await getDownloadURL(upload.snapshot.ref));
+      },
     );
+    const timeoutId = window.setTimeout(() => {
+      upload.cancel();
+      reject(new Error("Upload timed out. Check your internet connection and Firebase Storage setup."));
+    }, 45_000);
   });
 }
 
@@ -62,6 +76,7 @@ export function BusinessImageUpload({
   const [logo, setLogo] = useState(logoUrl);
   const [cover, setCover] = useState(coverUrl);
   const [uploading, setUploading] = useState<"logo" | "cover" | null>(null);
+  const [processing, setProcessing] = useState<"logo" | "cover" | null>(null);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
 
@@ -69,6 +84,7 @@ export function BusinessImageUpload({
     if (!file) return;
     setError("");
     setUploading(kind);
+    setProcessing(kind);
     setProgress(0);
     try {
       const url = await uploadImage(file, `businesses/${businessId}/${kind}`, kind === "logo" ? 512 : 1600, setProgress);
@@ -78,6 +94,7 @@ export function BusinessImageUpload({
       setError(uploadError instanceof Error ? uploadError.message : "Image upload failed.");
     } finally {
       setUploading(null);
+      setProcessing(null);
       setProgress(0);
     }
   };
@@ -90,7 +107,7 @@ export function BusinessImageUpload({
         <p className="text-xs font-semibold text-slate-700">Business Image / Icon</p>
         <label className="flex min-h-28 cursor-pointer items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 hover:border-primary">
           {logo ? <img src={logo} alt="Business image preview" className="h-20 w-20 rounded-lg object-cover" /> : <ImagePlus className="h-8 w-8 text-slate-400" />}
-          <span className="text-xs text-slate-500">{uploading === "logo" ? `Uploading ${progress}%` : "Choose image from device"}</span>
+          <span className="text-xs text-slate-500">{processing === "logo" && progress === 0 ? "Processing image..." : uploading === "logo" ? `Uploading ${progress}%` : "Choose image from device"}</span>
           <input type="file" accept="image/*" className="sr-only" onChange={(event) => handleUpload("logo", event.target.files?.[0])} disabled={uploading !== null} />
         </label>
       </div>
@@ -98,7 +115,7 @@ export function BusinessImageUpload({
         <p className="text-xs font-semibold text-slate-700">Customer Page Background</p>
         <label className="flex min-h-28 cursor-pointer items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 hover:border-primary">
           {cover ? <img src={cover} alt="Customer page background preview" className="h-20 w-28 rounded-lg object-cover" /> : <ImagePlus className="h-8 w-8 text-slate-400" />}
-          <span className="text-xs text-slate-500">{uploading === "cover" ? `Uploading ${progress}%` : "Choose image from device"}</span>
+          <span className="text-xs text-slate-500">{processing === "cover" && progress === 0 ? "Processing image..." : uploading === "cover" ? `Uploading ${progress}%` : "Choose image from device"}</span>
           <input type="file" accept="image/*" className="sr-only" onChange={(event) => handleUpload("cover", event.target.files?.[0])} disabled={uploading !== null} />
         </label>
       </div>
