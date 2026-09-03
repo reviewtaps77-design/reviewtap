@@ -61,21 +61,3 @@ export async function updateBusinessProfile(formData: FormData) {
   }
 }
 
-export async function updateBusinessImage(kind: "logo" | "cover", url: string) {
-  const session = await requireOwner();
-  const businessId = getSessionBusinessId(session);
-
-  if (!/^https:\/\//i.test(url) || url.length > 2048) {
-    return { success: false, error: "Invalid uploaded image URL." };
-  }
-
-  await db.business.update({
-    where: { id: businessId },
-    data: kind === "logo" ? { logoUrl: url } : { coverUrl: url },
-  });
-
-  revalidatePath("/dashboard/profile");
-  revalidatePath("/dashboard", "layout");
-  revalidatePath("/tenant", "layout");
-  return { success: true };
-}

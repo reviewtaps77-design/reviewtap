@@ -57,6 +57,7 @@ export default async function ProfilePage() {
         </CardHeader>
         <CardContent className="pt-6">
           <form
+            data-business-profile
             action={async (formData: FormData) => {
               "use server";
               await updateBusinessProfile(formData);
