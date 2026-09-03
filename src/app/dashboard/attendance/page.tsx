@@ -17,7 +17,7 @@ export default async function AttendancePage() {
     db.employee.findMany({ where: { businessId }, orderBy: { name: "asc" } }),
     db.attendance.findMany({ where: { businessId, date }, select: { employeeId: true, status: true } }),
     db.attendance.findMany({
-      where: { businessId, date: { lt: date } },
+      where: { businessId },
       include: { employee: { select: { name: true } } },
       orderBy: [{ date: "desc" }, { employee: { name: "asc" } }],
       take: 200,
@@ -62,7 +62,7 @@ export default async function AttendancePage() {
       <Card className="rounded-3xl border-slate-200/80 shadow-sm bg-white overflow-hidden">
         <CardHeader className="border-b border-slate-100">
           <CardTitle className="text-base">Past attendance records</CardTitle>
-          <p className="text-xs text-slate-500">Attendance history for each staff member, newest first.</p>
+          <p className="text-xs text-slate-500">Saved attendance history for each staff member, newest first.</p>
         </CardHeader>
         <CardContent className="p-0">
           {pastAttendance.length === 0 ? (
