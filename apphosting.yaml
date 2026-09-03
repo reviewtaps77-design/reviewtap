@@ -51,5 +51,5 @@ env:
   - variable: SMTP_FROM
     secret: SMTP_FROM
   - variable: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
-    secret: SECRET_NAME
+    secret: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
 
