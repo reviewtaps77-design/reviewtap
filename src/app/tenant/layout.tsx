@@ -1,11 +1,13 @@
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function TenantLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  noStore();
   const headersList = await headers();
   const slug = headersList.get("x-business-slug");
 

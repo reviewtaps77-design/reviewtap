@@ -1,9 +1,11 @@
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
+import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 import { Star, Sparkles, MessageSquare, ExternalLink, MapPin } from "lucide-react";
 
 export default async function TenantLandingPage() {
+  noStore();
   const headersList = await headers();
   const slug = headersList.get("x-business-slug");
   const tenantBase = headersList.get("x-tenant-base") || "";

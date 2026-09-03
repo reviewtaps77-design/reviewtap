@@ -103,7 +103,9 @@ export function BusinessImageUpload({
         setCover(url);
         if (coverInput.current) coverInput.current.value = url;
       }
-      document.querySelector<HTMLFormElement>("form[data-business-profile]")?.requestSubmit();
+      const profileForm = document.querySelector<HTMLFormElement>("form[data-business-profile]");
+      if (!profileForm) throw new Error("Business profile form was not found.");
+      profileForm.requestSubmit();
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Image upload failed.");
     } finally {
