@@ -20,8 +20,8 @@ export async function updateBusinessProfile(formData: FormData) {
       description: formData.get("description"),
       googleReviewUrl: formData.get("googleReviewUrl"),
       brandColor: formData.get("brandColor") || "#2563eb",
-      logoUrl: formData.get("logoUrl"),
-      coverUrl: formData.get("coverUrl"),
+      logoUrl: formData.has("logoUrl") ? formData.get("logoUrl") : undefined,
+      coverUrl: formData.has("coverUrl") ? formData.get("coverUrl") : undefined,
     });
 
     if (!parsedInput.success) {
