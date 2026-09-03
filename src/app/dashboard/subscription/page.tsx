@@ -110,8 +110,8 @@ export default async function SubscriptionPage() {
               ReviewTap operates with dedicated manual subscription management. To extend your license or adjust your plan tier, please contact your account representative or our support desk directly:
             </p>
             <div className="flex flex-wrap gap-4 pt-1 text-xs font-semibold text-slate-800">
-              <a href="mailto:support@reviewtap.in" className="flex items-center gap-1.5 text-primary hover:underline">
-                <Mail className="w-4 h-4" /> support@reviewtap.in
+              <a href="mailto:reviewtaps77@gmail.com" className="flex items-center gap-1.5 text-primary hover:underline">
+                <Mail className="w-4 h-4" /> reviewtaps77@gmail.com
               </a>
               <a href="tel:+919876543210" className="flex items-center gap-1.5 text-primary hover:underline">
                 <Phone className="w-4 h-4" /> +91 98765 43210
