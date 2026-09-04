@@ -75,7 +75,7 @@ export async function submitPrivateFeedback(data: {
     },
   });
 
-  revalidatePath("/dashboard/feedback");
+  revalidatePath("/dashboard/complaints-and-feedback");
   revalidatePath("/dashboard");
 
   return { success: true, id: feedback.id };
@@ -94,7 +94,7 @@ export async function updateFeedbackStatus(feedbackId: string, status: "unread" 
       data: { status },
     });
 
-    revalidatePath("/dashboard/feedback");
+    revalidatePath("/dashboard/complaints-and-feedback");
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error: any) {
@@ -115,7 +115,7 @@ export async function deleteFeedback(feedbackId: string) {
       },
     });
 
-    revalidatePath("/dashboard/feedback");
+    revalidatePath("/dashboard/complaints-and-feedback");
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error: any) {

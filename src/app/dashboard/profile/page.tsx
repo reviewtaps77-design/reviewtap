@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/submit-button";
 import { Textarea } from "@/components/ui/textarea";
 import { updateBusinessProfile } from "@/actions/business";
 import { BusinessImageUpload } from "@/components/business-image-upload";
@@ -183,9 +183,9 @@ export default async function ProfilePage() {
             </div>
 
             <div className="pt-4 border-t border-slate-100 flex justify-end">
-              <Button type="submit" size="lg" className="rounded-xl font-bold px-8 shadow-sm">
+              <SubmitButton size="lg" className="rounded-xl font-bold px-8 shadow-sm" pendingText="Saving…">
                 Save Profile Changes
-              </Button>
+              </SubmitButton>
             </div>
           </form>
         </CardContent>

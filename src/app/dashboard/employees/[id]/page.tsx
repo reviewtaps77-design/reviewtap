@@ -17,6 +17,7 @@ import {
   User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { generateQRCodeDataUrl, buildEmployeeUrl } from "@/lib/qr";
@@ -113,14 +114,14 @@ export default async function EmployeeDetailPage({
               await toggleEmployeeStatus(employee.id);
             }}
           >
-            <Button
-              type="submit"
+            <SubmitButton
               variant={employee.status === "active" ? "outline" : "default"}
               size="sm"
               className="rounded-xl text-xs"
+              pendingText="Updating…"
             >
               {employee.status === "active" ? "Deactivate Staff" : "Activate Staff"}
-            </Button>
+            </SubmitButton>
           </form>
           <form
             action={async () => {
@@ -128,14 +129,14 @@ export default async function EmployeeDetailPage({
               await deleteEmployee(employee.id);
             }}
           >
-            <Button
-              type="submit"
+            <SubmitButton
               variant="ghost"
               size="sm"
               className="rounded-xl text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+              pendingText="Deleting…"
             >
               Delete
-            </Button>
+            </SubmitButton>
           </form>
         </div>
       </div>

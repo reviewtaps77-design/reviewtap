@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
 import { FirebaseProvider } from '@/components/firebase-provider';
+import { AutoRefreshOnIdle } from '@/components/auto-refresh-on-idle';
 import favicon from '../../icon.jpeg';
 import './globals.css';
 
@@ -44,6 +45,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-background antialiased">
         <FirebaseProvider />
+        <AutoRefreshOnIdle />
         {children}
         <Toaster position="top-right" richColors />
       </body>

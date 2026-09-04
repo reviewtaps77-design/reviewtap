@@ -37,12 +37,14 @@ function isPlatformHost(host: string): boolean {
 
 // Routes that never need a business slug — either no tenant concept
 // (/admin, /api) or the business comes from the logged-in session
-// rather than the URL (/dashboard).
+// rather than the URL (/dashboard). Public complaint links
+// (/complaint/<token>) resolve their own business from the token.
 function isTenantFreeRoute(pathname: string): boolean {
   return (
     pathname.startsWith('/admin') ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/api') ||
+    pathname.startsWith('/complaint') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon.ico')
   );

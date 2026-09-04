@@ -7,6 +7,7 @@ import {
   Users, 
   BarChart3, 
   MessageSquare, 
+  MessageSquareWarning,
   QrCode, 
   Building2, 
   CreditCard, 
@@ -16,12 +17,13 @@ import {
   LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DashboardMobileNav } from "@/components/dashboard-mobile-nav";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/employees", label: "Employees", icon: Users },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/dashboard/feedback", label: "Private Feedback", icon: MessageSquare },
+  { href: "/dashboard/complaints-and-feedback", label: "Complaints & Feedback", icon: MessageSquareWarning },
   { href: "/dashboard/qr-nfc", label: "QR & NFC Codes", icon: QrCode },
   { href: "/dashboard/attendance", label: "Staff Attendance", icon: CalendarCheck },
   { href: "/dashboard/profile", label: "Business Profile", icon: Building2 },
@@ -136,7 +138,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
         <header className="md:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <DashboardMobileNav
+              businessName={businessName}
+              brandColor={brandColor}
+              logoUrl={business?.logoUrl}
+              publicPageUrl={publicPageUrl}
+              planLabel={activeSub ? activeSub.plan : "Active"}
+              planExpiry={activeSub ? new Date(activeSub.expiryDate).toLocaleDateString("en-IN") : null}
+            />
             {business?.logoUrl ? (
               <img src={business.logoUrl} alt={`${businessName} logo`} className="w-8 h-8 rounded-lg object-cover" />
             ) : (

@@ -55,6 +55,12 @@ model Business {
   aiUsage         AiUsage[]
   employeeRatings EmployeeRating[]
   attendance      Attendance[]
+  complaintCategories ComplaintCategory[]
+  complaintTables     ComplaintTable[]
+  complaintQrs        ComplaintQr[]
+  complaints          Complaint[]
+  complaintNotes      ComplaintNote[]
+  complaintSettings   ComplaintSettings?
 
   @@map("businesses")
 }
@@ -97,6 +103,7 @@ model Employee {
   feedback        Feedback[]
   aiUsage         AiUsage[]
   attendance      Attendance[]
+  assignedComplaints Complaint[] @relation("ComplaintAssignee")
 
   @@unique([businessId, slug])
   @@index([businessId])
@@ -264,4 +271,126 @@ model Attendance {
   @@unique([businessId, employeeId, date])
   @@index([businessId, date])
   @@map("attendance")
+}
+
+model ComplaintCategory {
+  id         String   @id @default(cuid())
+  businessId String   @map("business_id")
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  label      String
+  sortOrder  Int      @default(0) @map("sort_order")
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  complaints Complaint[]
+  selections ComplaintSelection[]
+
+  @@index([businessId])
+  @@map("complaint_categories")
+}
+
+model ComplaintTable {
+  id         String   @id @default(cuid())
+  businessId String   @map("business_id")
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name       String
+  branch     String?
+  status     String   @default("active") // active | inactive
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  qrs        ComplaintQr[]
+  complaints Complaint[]
+
+  @@unique([businessId, name])
+  @@index([businessId])
+  @@map("complaint_tables")
+}
+
+model ComplaintQr {
+  id         String    @id @default(cuid())
+  businessId String    @map("business_id")
+  business   Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  tableId    String?   @map("table_id")
+  table      ComplaintTable? @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  label      String?
+  token      String    @unique @default(cuid()) // unique-id used in /complaint/<token> URLs (QR stays valid across settings changes)
+  status     String    @default("active") // active | disabled
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  complaints Complaint[]
+
+  @@index([businessId])
+  @@index([businessId, tableId])
+  @@map("complaint_qrs")
+}
+
+model Complaint {
+  id             String    @id @default(cuid())
+  businessId     String    @map("business_id")
+  business       Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  tableId        String?   @map("table_id")
+  table          ComplaintTable? @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  tableName      String?   @map("table_name") // snapshot so history survives table edits/deletion
+  qrId           String?   @map("qr_id")
+  qr             ComplaintQr? @relation(fields: [qrId], references: [id], onDelete: SetNull)
+  categoryId     String?   @map("category_id")
+  category       ComplaintCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryLabel  String?   @map("category_label") // snapshot (comma-joined labels) so history survives category edits/deletion
+  description    String?   @db.Text
+  customerName   String?   @map("customer_name")
+  status         String    @default("new") // new | in_progress | resolved | closed
+  employeeId     String?   @map("employee_id")
+  employee       Employee? @relation("ComplaintAssignee", fields: [employeeId], references: [id], onDelete: SetNull)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  notes ComplaintNote[]
+  selections ComplaintSelection[]
+
+  @@index([businessId])
+  @@index([businessId, status])
+  @@index([businessId, tableId])
+  @@map("complaints")
+}
+
+model ComplaintSelection {
+  complaintId String    @map("complaint_id")
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  categoryId  String    @map("category_id")
+  category    ComplaintCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([complaintId, categoryId])
+  @@index([categoryId])
+  @@map("complaint_selections")
+}
+
+model ComplaintNote {
+  id          String    @id @default(cuid())
+  businessId  String    @map("business_id")
+  business    Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  complaintId String    @map("complaint_id")
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  note        String    @db.Text
+  authorName  String?   @map("author_name")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([businessId])
+  @@index([complaintId])
+  @@map("complaint_notes")
+}
+
+model ComplaintSettings {
+  id               String   @id @default(cuid())
+  businessId       String   @unique @map("business_id")
+  business         Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  heading          String?  @db.Text
+  description      String?  @db.Text
+  allowDescription Boolean  @default(true) @map("allow_description")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("complaint_settings")
 }

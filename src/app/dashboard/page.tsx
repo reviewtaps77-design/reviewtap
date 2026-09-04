@@ -226,7 +226,7 @@ export default async function DashboardPage() {
               <CardDescription className="text-xs">Confidential customer suggestions</CardDescription>
             </div>
             <Button variant="ghost" size="sm" asChild className="text-xs">
-              <Link href="/dashboard/feedback">View All ({stats.unreadFeedback} unread) <ArrowRight className="w-3.5 h-3.5 ml-1" /></Link>
+              <Link href="/dashboard/complaints-and-feedback#feedback">View All ({stats.unreadFeedback} unread) <ArrowRight className="w-3.5 h-3.5 ml-1" /></Link>
             </Button>
           </CardHeader>
           <CardContent className="pt-4">

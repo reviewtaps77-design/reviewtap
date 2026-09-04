@@ -40,7 +40,7 @@ export async function requestPasswordReset(email: string) {
     });
 
     const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "reviewtap.in";
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://reviewtap.in";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://reviewtap--reviewtap-235c2.asia-southeast1.hosted.app";
     const resetUrl = `${appUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
 
     try {

@@ -87,6 +87,44 @@ export const resetRequestSchema = z.object({
   email: emailSchema,
 });
 
+export const complaintTableSchema = z.object({
+  name: z.string().trim().min(1).max(80),
+  branch: z.string().trim().max(120).nullable().optional(),
+  status: z.enum(["active", "inactive"]).default("active"),
+});
+
+export const complaintQrSchema = z.object({
+  tableId: z.string().trim().min(1).max(120).nullable().optional(),
+  label: z.string().trim().max(120).nullable().optional(),
+  status: z.enum(["active", "disabled"]).default("active"),
+});
+
+export const complaintCategorySchema = z.object({
+  label: z.string().trim().min(1).max(80),
+  isActive: z.boolean().default(true),
+});
+
+export const complaintSettingsSchema = z.object({
+  heading: z.string().trim().max(200).nullable().optional(),
+  description: z.string().trim().max(600).nullable().optional(),
+  allowDescription: z.boolean().default(true),
+});
+
+export const complaintStatusSchema = z.enum(["new", "in_progress", "resolved", "closed"]);
+
+export const complaintSubmitSchema = z.object({
+  token: z.string().trim().min(1).max(120),
+  categoryIds: z.array(z.string().trim().min(1).max(120)).min(1).max(20),
+  description: z.string().trim().max(2000).nullable().optional(),
+  customerName: z.string().trim().max(120).nullable().optional(),
+});
+
+export const complaintNoteSchema = z.object({
+  complaintId: z.string().trim().min(1).max(120),
+  note: z.string().trim().min(1).max(2000),
+  authorName: z.string().trim().max(120).nullable().optional(),
+});
+
 export function parseValidated<T>(
   schema: z.ZodType<T>,
   data: unknown
