@@ -291,7 +291,7 @@ export default async function ComplaintsAndFeedbackPage({
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
+            <div className="max-h-96 overflow-auto">
               <Table>
                 <TableHeader className="bg-slate-50/75">
                   <TableRow>
