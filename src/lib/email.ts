@@ -1,20 +1,23 @@
 import nodemailer from 'nodemailer';
 
-// Outbound mail goes through Gmail (Firebase has no native email-sending
+// Outbound mail goes through Gmail only (Firebase has no native email-sending
 // service). Requires a Google App Password, NOT the regular Gmail password:
 // Google Account → Security → 2-Step Verification → App passwords → Mail.
 const gmailUser = process.env.GMAIL_USER || '';
 const gmailAppPassword = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
-const defaultFrom = process.env.GMAIL_FROM || (gmailUser ? `ReviewTap <${gmailUser}>` : '');
+
+const defaultFrom =
+  process.env.GMAIL_FROM || (gmailUser ? `ReviewTap <${gmailUser}>` : '');
+
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
-  auth: {
-    user: gmailUser,
-    pass: gmailAppPassword,
-  },
+  auth: { user: gmailUser, pass: gmailAppPassword },
 });
+
+// Visible in Firebase logs — confirms whether mail credentials reached the backend (no secrets printed).
+console.log(`[email] provider=${gmailUser && gmailAppPassword ? 'gmail' : 'none'} from=${defaultFrom ? 'set' : 'missing'}`);
 
 export async function sendContactFormEmail({
   name,
