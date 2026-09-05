@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReviewTap — Data &amp; Storage Modelling (Plain-English Guide)</title>
+<style>
+  :root{--entity:#1d4ed8;--entity-bg:#eff6ff;--process:#047857;--process-bg:#ecfdf5;--store:#7c3aed;--store-bg:#f5f3ff;--note:#b45309;--note-bg:#fffbeb;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0}
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:#f8fafc;margin:0;padding:0;line-height:1.6}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 20px 64px}
+  header.hero{background:linear-gradient(135deg,#5b21b6,#0f766e);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}
+  header.hero h1{margin:0 0 6px;font-size:30px}
+  header.hero p{margin:0;opacity:.85;font-size:14px}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:24px;font-size:13px}
+  nav.toc a{color:var(--entity);text-decoration:none;margin-right:14px}
+  nav.toc a:hover{text-decoration:underline}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  section.card h2{margin:0 0 4px;font-size:21px}
+  section.card .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f1f5f9;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#475569}
+  tr:last-child td{border-bottom:none}
+  code.id{background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px;font-family:Consolas,monospace;white-space:nowrap}
+  .box{border:2px solid;border-radius:12px;padding:10px 14px;font-size:13px;background:#fff;margin-bottom:10px}
+  .box b{display:block;font-size:13px}
+  .box small{color:var(--muted);font-size:12px}
+  .box.store{border-color:var(--store);background:var(--store-bg)}
+  .box.note{border-color:var(--note);background:var(--note-bg)}
+  .box.process{border-color:var(--process);background:var(--process-bg)}
+  ul.tight{margin:6px 0;padding-left:20px;font-size:13px}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
+  @media print{body{background:#fff}section.card{box-shadow:none;break-inside:avoid}nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>ReviewTap — Data &amp; Storage Modelling</h1>
+    <p>Every storage drawer: what is kept, how drawers link together, and how long things are kept &bull; 5 Sep 2026</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#tables">Storage Drawers</a>
+    <a href="#links">How They Link</a>
+    <a href="#safety">Safety Rules</a>
+    <a href="#env">Where the Database Lives</a>
+    <a href="#related">Related Docs</a>
+  </nav>
+
+  <section class="card" id="tables">
+    <h2>Storage Drawers — 13 Tables in Plain Words</h2>
+    <p class="sub">The database blueprint lives in <code class="id">prisma/schema.prisma</code>. “Must be unique” means duplicates are rejected automatically.</p>
+    <table>
+      <tr><th>Drawer</th><th>What each record keeps</th><th>Special rules</th></tr>
+      <tr><td><b>Login accounts</b></td><td>Name, email, scrambled password, role (admin / owner), which business, password-reset code + expiry</td><td>Email must be unique</td></tr>
+      <tr><td><b>Businesses</b></td><td>Name, web-address name, owner contact, Google review link, logo + cover photo links, colors, description, address, phone, website, category, active/paused/expired, dates</td><td>Web-address name must be unique</td></tr>
+      <tr><td><b>Subscriptions</b></td><td>Business, plan (monthly / 6-month / 12-month), price in rupees, start + expiry dates, status</td><td>Shown newest-first</td></tr>
+      <tr><td><b>Staff members</b></td><td>Business, name, staff code, job role, department, photo, personal web-address name, active or not</td><td>Web-address name unique per business</td></tr>
+      <tr><td><b>QR codes</b></td><td>Business (+ staff member if staff QR), kind (business/employee × QR/NFC), web address, on or off</td><td>Images are generated fresh when viewed — never stored</td></tr>
+      <tr><td><b>Visits (sessions)</b></td><td>Secret visit code, business (+ staff), how they came, phone/tablet/computer, started + finished time</td><td>Visit code must be unique</td></tr>
+      <tr><td><b>Scans</b></td><td>Which visit, business (+ staff), how they came, exact scan time</td><td>One row per scan/tap</td></tr>
+      <tr><td><b>Staff ratings</b></td><td>Behaviour, speed, overall (1–5 stars each), comment, customer name</td><td>Never edited after saving</td></tr>
+      <tr><td><b>Reviews</b></td><td>AI-written text, the questions asked, customer-edited text, Google-click flag + time</td><td>Private until posted by the customer on Google</td></tr>
+      <tr><td><b>Private feedback</b></td><td>Star rating, what they liked, what to improve, comments, customer contact, unread/read/resolved</td><td>Never public</td></tr>
+      <tr><td><b>AI usage</b></td><td>How many words/tokens used, which AI model, when</td><td>For cost tracking</td></tr>
+      <tr><td><b>Attendance</b></td><td>Staff member, date, present / absent / on leave</td><td>One row per person per day; only last 6 months kept</td></tr>
+      <tr><td><b>Complaint options</b></td><td>Label, display order, enabled or not</td><td>Defaults filled in on first visit</td></tr>
+      <tr><td><b>Tables</b></td><td>Table name (e.g. “Table 12”), branch (e.g. “Pune”), active or not</td><td>Name must be unique per business</td></tr>
+      <tr><td><b>Table QRs</b></td><td>Table link, label, secret code used in the printed QR, on or off</td><td>Secret code must be unique; never changes</td></tr>
+      <tr><td><b>Complaints</b></td><td>Saved copies of table + option names, description, customer name, status, date</td><td>Status starts at “new”</td></tr>
+      <tr><td><b>Complaint option picks</b></td><td>Which options belong to which complaint (for multi-pick)</td><td>One row per pick</td></tr>
+      <tr><td><b>Private notes</b></td><td>Note text, author, time — management eyes only</td><td>Deleted with their complaint</td></tr>
+      <tr><td><b>Complaint page settings</b></td><td>Heading, description, show/hide the description box</td><td>One row per business</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="links">
+    <h2>How the Drawers Link Together</h2>
+    <p class="sub">Everything hangs off the business — delete a business and its whole drawer set goes with it.</p>
+    <ul class="tight">
+      <li><b>One business → many</b> logins, plans, staff, QRs, visits, scans, ratings, reviews, feedback, AI usage, attendance, and the whole complaints section.</li>
+      <li><b>One staff member → many</b> QRs, visits, scans, ratings, reviews, feedback entries.</li>
+      <li><b>One visit → many</b> scans, ratings, reviews, feedback entries, AI usage rows.</li>
+      <li><b>One table → many</b> table QRs and complaints. <b>One table QR → many</b> complaints.</li>
+      <li><b>One complaint → many</b> option picks and private notes. <b>One option → many</b> picks.</li>
+      <li><b>One business → one</b> complaint-page settings row.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="safety">
+    <h2>Safety Rules — What Happens on Delete</h2>
+    <p class="sub">Two behaviors, chosen so history is never lost by accident.</p>
+    <div class="box store"><b>Full cleanup (business, visit, complaint deleted)</b><small>Everything underneath is deleted too — e.g. deleting a complaint also deletes its private notes and option picks.</small></div>
+    <div class="box note"><b>Keep history (staff, table, QR, option deleted)</b><small>The link is emptied but the records stay — e.g. deleting “Table 12” keeps its old complaints readable via the saved table-name copy. Same for renamed options and switched-off QRs.</small></div>
+    <div class="box process"><b>Copies, not just links</b><small>Each complaint saves its own copy of the table name and option names at submit time — later renames can never rewrite history.</small></div>
+    <div class="box process"><b>Secret codes, generated images</b><small>Visit codes and QR secret codes are auto-generated and unique. QR pictures are drawn fresh on screen from the web address — nothing image-like is stored, so setting changes never need a reprint.</small></div>
+  </section>
+
+  <section class="card" id="env">
+    <h2>Where the Database Lives + Push Rules</h2>
+    <p class="sub">Same blueprint, two homes. Standing rule: always say which home needs the push.</p>
+    <ul class="tight">
+      <li><b>Local (testing):</b> MySQL in Docker on this computer. Command: <code class="id">npx prisma db push</code> with the address pointed at <code class="id">localhost:3306</code>. Run it and confirm “already in sync”.</li>
+      <li><b>Production (live site):</b> Cloud SQL reached via Firebase App Hosting. App Hosting does <b>not</b> push the blueprint by itself — run it manually through the Cloud SQL Auth Proxy (port 3307), then redeploy the site.</li>
+      <li><b>Retention:</b> only attendance is auto-cleaned (older than 6 months). Everything else is kept until someone deletes it on screen.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="related">
+    <h2>Related Documents</h2>
+    <ul class="tight">
+      <li><a href="ReviewTap-DFD.html">DFD — how information flows</a></li>
+      <li><a href="ReviewTap-Structural-Modelling.html">Structural — pages, blocks, addresses, files</a></li>
+      <li><a href="ReviewTap-Dynamic-Behavioral-Modelling.html">Dynamic &amp; Behavioral — statuses and step-by-step journeys</a></li>
+      <li><a href="ReviewTap-Requirements-User-Interaction-Modelling.html">Requirements &amp; User Interaction — what each role can do</a></li>
+    </ul>
+  </section>
+
+  <footer>ReviewTap data &amp; storage modelling · single file, works offline · print via browser (Ctrl+P)</footer>
+
+</div>
+</body>
+</html>

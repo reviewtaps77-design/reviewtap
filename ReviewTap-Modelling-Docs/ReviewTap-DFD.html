@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReviewTap — How Information Flows (Plain-English Guide)</title>
+<style>
+  :root{
+    --entity:#1d4ed8; --entity-bg:#eff6ff;
+    --process:#047857; --process-bg:#ecfdf5;
+    --store:#7c3aed; --store-bg:#f5f3ff;
+    --note:#b45309; --note-bg:#fffbeb;
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:#f8fafc;margin:0;padding:0;line-height:1.6}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 20px 64px}
+  header.hero{background:linear-gradient(135deg,#1e3a8a,#4c1d95);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}
+  header.hero h1{margin:0 0 6px;font-size:30px}
+  header.hero p{margin:0;opacity:.85;font-size:14px}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:24px;font-size:13px}
+  nav.toc a{color:var(--entity);text-decoration:none;margin-right:14px}
+  nav.toc a:hover{text-decoration:underline}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  section.card h2{margin:0 0 4px;font-size:21px}
+  section.card .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 6px}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;border-radius:999px;padding:5px 12px;border:1px solid}
+  .dot{width:11px;height:11px;border-radius:3px}
+  .p-entity{background:var(--entity-bg);border-color:#bfdbfe;color:#1e40af}.p-entity .dot{background:var(--entity)}
+  .p-process{background:var(--process-bg);border-color:#a7f3d0;color:#065f46}.p-process .dot{background:var(--process)}
+  .p-store{background:var(--store-bg);border-color:#ddd6fe;color:#5b21b6}.p-store .dot{background:var(--store)}
+  .flow{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .box{border:2px solid;border-radius:12px;padding:10px 14px;font-size:13px;background:#fff}
+  .box b{display:block;font-size:13px}
+  .box small{color:var(--muted);font-size:12px}
+  .box.entity{border-color:var(--entity);background:var(--entity-bg)}
+  .box.process{border-color:var(--process);background:var(--process-bg)}
+  .box.store{border-color:var(--store);background:var(--store-bg)}
+  .box.note{border-color:var(--note);background:var(--note-bg)}
+  .arrow{text-align:center;color:#94a3b8;font-weight:700;line-height:1.1;padding:3px 0;font-size:15px}
+  .arrow small{display:block;font-weight:600;color:var(--muted);font-size:11px}
+  .row{display:grid;gap:12px}
+  .row.c2{grid-template-columns:1fr 1fr}.row.c3{grid-template-columns:1fr 1fr 1fr}.row.c4{grid-template-columns:1fr 1fr 1fr 1fr}
+  @media(max-width:760px){.row.c2,.row.c3,.row.c4{grid-template-columns:1fr}}
+  .ctx{display:grid;grid-template-columns:1fr 44px 1.4fr 44px 1fr;gap:6px;align-items:stretch}
+  @media(max-width:760px){.ctx{grid-template-columns:1fr}.ctx .harrow{display:none}}
+  .harrow{display:flex;align-items:center;justify-content:center;color:#94a3b8;font-weight:700;font-size:18px}
+  .syscol{display:flex;flex-direction:column;gap:8px}
+  .sys{background:linear-gradient(135deg,#1e3a8a,#4c1d95);color:#fff;border-radius:14px;padding:18px 14px;text-align:center}
+  .sys b{font-size:16px}.sys small{opacity:.8;font-size:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f1f5f9;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#475569}
+  tr:last-child td{border-bottom:none}
+  code.id{background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px;font-family:Consolas,monospace;white-space:nowrap}
+  .branch-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:10px 0 -2px}
+  ul.tight{margin:6px 0;padding-left:20px;font-size:13px}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
+  @media print{body{background:#fff}section.card{box-shadow:none;break-inside:avoid}nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>ReviewTap — How Information Flows</h1>
+    <p>A plain-English picture of the whole website: who uses it, what happens step by step, and where everything is saved &bull; 5 Sep 2026</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#people">People &amp; Storage</a>
+    <a href="#level0">Big Picture</a>
+    <a href="#level1">Main Steps</a>
+    <a href="#level2a">Customer Review Journey</a>
+    <a href="#level2b">Table Complaint Journey</a>
+    <a href="#level2c">Staff Attendance</a>
+    <a href="#level2d">New Business Setup</a>
+    <a href="#cross">House Rules</a>
+    <a href="ReviewTap-Structural-Modelling.html">Structural</a>
+    <a href="ReviewTap-Dynamic-Behavioral-Modelling.html">Behavioral</a>
+    <a href="ReviewTap-Data-Storage-Modelling.html">Data &amp; Storage</a>
+    <a href="ReviewTap-Requirements-User-Interaction-Modelling.html">Requirements</a>
+  </nav>
+
+  <section class="card">
+    <div class="legend">
+      <span class="pill p-entity"><span class="dot"></span>Blue = People / outside services</span>
+      <span class="pill p-process"><span class="dot"></span>Green = Something the website does</span>
+      <span class="pill p-store"><span class="dot"></span>Purple = Where info is saved</span>
+    </div>
+  </section>
+
+  <section class="card" id="people">
+    <h2>People Who Use the System &amp; Where Info Is Saved</h2>
+    <p class="sub">Everyone who sends or receives information, and every storage drawer inside the system.</p>
+    <div class="row c2">
+      <div>
+        <table>
+          <tr><th>Code</th><th>Who</th><th>What they do</th></tr>
+          <tr><td><code class="id">E1</code></td><td><b>Customer</b></td><td>Scans QR codes, rates staff, writes reviews, sends feedback and complaints</td></tr>
+          <tr><td><code class="id">E2</code></td><td><b>Business Owner</b></td><td>Sets up the business, manages staff and QR codes, reads complaints, checks reports</td></tr>
+          <tr><td><code class="id">E3</code></td><td><b>Platform Admin</b></td><td>Creates new business accounts and manages their subscriptions</td></tr>
+          <tr><td><code class="id">E4</code></td><td><b>Google</b></td><td>The place where customers finally post their public reviews</td></tr>
+          <tr><td><code class="id">E5</code></td><td><b>AI Writing Helper</b></td><td>Helps customers turn a few quick answers into a nicely written review</td></tr>
+          <tr><td><code class="id">E6</code></td><td><b>Email Service</b></td><td>Sends welcome emails, password resets and renewal reminders</td></tr>
+          <tr><td><code class="id">E7</code></td><td><b>Firebase (Google's helper service)</b></td><td>Keeps the business logo and cover photos, and optionally counts page visits for statistics</td></tr>
+        </table>
+      </div>
+      <div>
+        <table>
+          <tr><th>Code</th><th>Storage drawer</th><th>What is kept inside</th></tr>
+          <tr><td><code class="id">D1</code></td><td><b>Login accounts</b></td><td>Email, secret password, role, which business they belong to</td></tr>
+          <tr><td><code class="id">D2</code></td><td><b>Businesses</b></td><td>Name, web address, logo, colors, Google review link, active or not</td></tr>
+          <tr><td><code class="id">D3</code></td><td><b>Subscriptions</b></td><td>Plan, price, start and end dates</td></tr>
+          <tr><td><code class="id">D4</code></td><td><b>Staff members</b></td><td>Name, job role, department, active or not</td></tr>
+          <tr><td><code class="id">D5</code></td><td><b>QR codes</b></td><td>The scan links for the business and for each staff member</td></tr>
+          <tr><td><code class="id">D6</code></td><td><b>Visits</b></td><td>One record per scan: how they came (QR or tap), phone or computer</td></tr>
+          <tr><td><code class="id">D7</code></td><td><b>Staff ratings</b></td><td>Behaviour, speed and overall scores from 1 to 5 stars</td></tr>
+          <tr><td><code class="id">D8</code></td><td><b>Reviews</b></td><td>The AI-written text, any customer edits, and whether they clicked through to Google</td></tr>
+          <tr><td><code class="id">D9</code></td><td><b>Private feedback</b></td><td>Star rating, what they liked, what to improve, read or resolved</td></tr>
+          <tr><td><code class="id">D10</code></td><td><b>AI usage</b></td><td>How much AI writing was used, for cost tracking</td></tr>
+          <tr><td><code class="id">D11</code></td><td><b>Attendance</b></td><td>Each staff member, each day: present, absent or on leave</td></tr>
+          <tr><td><code class="id">D12</code></td><td><b>Complaints section</b></td><td>Complaint options, tables, table QRs, complaints, private notes, page settings</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="level0">
+    <h2>Big Picture — Everything in One Diagram</h2>
+    <p class="sub">The whole website as a single box, showing who talks to it.</p>
+    <div class="ctx">
+      <div class="syscol">
+        <div class="box entity"><b>E1 · Customer</b><small>scans codes, gives ratings and complaints</small></div>
+        <div class="box entity"><b>E2 · Business Owner</b><small>set-up, QR codes, inbox, reports</small></div>
+        <div class="box entity"><b>E3 · Platform Admin</b><small>creates accounts, handles plans</small></div>
+      </div>
+      <div class="harrow">⇄</div>
+      <div class="sys">
+        <b>REVIEWTAP WEBSITE</b><br>
+        <small>QR reviews · table complaints · AI writing help · owner reports · staff attendance · automatic old-data cleanup<br>All info saved in drawers D1–D12</small>
+      </div>
+      <div class="harrow">⇄</div>
+      <div class="syscol">
+        <div class="box entity"><b>E4 · Google</b><small>where public reviews get posted</small></div>
+        <div class="box entity"><b>E5 · AI Helper</b><small>drafts the review text</small></div>
+        <div class="box entity"><b>E6 · Emails</b><small>welcome and reminder mails</small></div>
+        <div class="box entity"><b>E7 · Firebase</b><small>logo/cover photos + visit stats</small></div>
+        <div class="box store"><b>Database</b><small>all storage drawers D1–D12</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="level1">
+    <h2>Main Steps — What Happens in Order</h2>
+    <p class="sub">Each green box below is explained in full detail further down the page.</p>
+    <div class="flow">
+      <div class="box process"><b>P1 · Website Pages for Visitors</b><small>Home, pricing, contact and login pages · messages from the contact form are emailed to the team</small></div>
+      <div class="arrow">▼</div>
+      <div class="box process"><b>P2 · Login</b><small>Owners and admins sign in with email + password and get a secure session that remembers who they are</small></div>
+      <div class="arrow">▼</div>
+      <div class="box process"><b>P3 · New Business Setup (Admin)</b><small>Admin creates the business, its owner login, its plan and its first QR code — all in one safe step · admin can also extend plans, pause businesses, and watch all staff and AI usage across businesses · <i>full detail in “New Business Setup”</i></small></div>
+      <div class="arrow">▼</div>
+      <div class="row c3">
+        <div class="box process"><b>P4.1 · Business Profile</b><small>Owner adds logo and cover photos (uploaded with a progress bar to photo storage), colors, address and Google review link · each business gets its own web address and customer page</small></div>
+        <div class="box process"><b>P4.2 · Staff Management</b><small>Owner adds staff and compares them side by side; each person automatically gets their own QR code, downloadable for printing · the same link can also be put on tap-to-pay style NFC cards</small></div>
+        <div class="box process"><b>P4.3 · Complaint Setup</b><small>Owner adds tables, prints one QR per table, and customizes the complaint options</small></div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="row c2">
+        <div class="box process"><b>P5 · Customer Review Journey</b><small>Customer scans → rates → AI helps write → posts on Google · <i>full detail below</i></small></div>
+        <div class="box process"><b>P6 · Table Complaint Journey</b><small>Customer scans table QR → fills a private complaint → owner handles it · <i>full detail below</i></small></div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="row c3">
+        <div class="box process"><b>P7 · Owner Inbox</b><small>Owner reads and resolves feedback and complaints, and keeps private notes</small></div>
+        <div class="box process"><b>P8 · Staff Attendance</b><small>Owner marks who came to work; calendar and monthly totals · <i>full detail below</i></small></div>
+        <div class="box process"><b>P9 · Reports</b><small>Counts, average ratings and charts showing which QR codes work best · owner can also see AI writing usage and their own plan with expiry date</small></div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="box process"><b>P10 · Automatic Cleanup</b><small>Attendance older than 6 months is deleted automatically, so the database stays light</small></div>
+    </div>
+  </section>
+
+  <section class="card" id="level2a">
+    <h2>Customer Review Journey — Scan to Google Review</h2>
+    <p class="sub">The customer scans the business QR (web address like …/biz/cafe-name) or a staff member's personal QR.</p>
+    <div class="flow">
+      <div class="box process"><b>Step 1 · Visit is recorded</b><small>The system notes which business (and staff member) the scan belongs to, and whether the customer uses a phone or computer</small></div>
+      <div class="arrow">▼<small>if they scanned a staff QR…</small></div>
+      <div class="box process"><b>Step 2 · Rate the staff member</b><small>Customer gives 1–5 stars for behaviour, speed and overall service</small></div>
+      <div class="arrow">▼</div>
+      <div class="box process"><b>Step 3 · Branded welcome page</b><small>Shows the business logo, colors and staff name, with 3 big buttons</small></div>
+      <div class="arrow">▼</div>
+      <div class="row c3">
+        <div class="box entity"><b>Button 1 · Direct Google Review</b><small>Opens Google directly so the customer can post (this path is not tracked)</small></div>
+        <div class="box process"><b>Button 2 · AI Writing Help</b><small>Customer answers 2–3 quick questions → the AI drafts a review → customer edits it → presses “Copy &amp; Continue” → the review is pasted on Google → thank-you message. The draft and the Google click are saved.</small></div>
+        <div class="box process"><b>Button 3 · Private Feedback</b><small>Customer writes a private message for the management → saved as unread → thank-you message</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="level2b">
+    <h2>Table Complaint Journey — Scan to Private Complaint</h2>
+    <p class="sub">Each table has its own QR. Scanning it opens a page like …/complaint/abc123 — that secret code already tells the system the business and the table, so printed QRs never need reprinting.</p>
+    <div class="flow">
+      <div class="box process"><b>Owner setup (done once)</b><small>Add tables (with branch name if any) → print one QR per table → customize the complaint options and the page heading. Ready-made options are filled in automatically: Slow Service, Staff Behaviour, Food Quality, Price, Cleanliness, Other.</small></div>
+      <div class="arrow">▼<small>customer scans the table QR (no login, no typing of table number)</small></div>
+      <div class="box process"><b>The link is checked</b><small>The system finds the right business and table. A switched-off QR shows “This QR code is currently unavailable”; a wrong link shows “Invalid Link”.</small></div>
+      <div class="arrow">▼</div>
+      <div class="box process"><b>Complaint form</b><small>Business logo, colors and table name on top → “What went wrong?” with tappable options (more than one can be picked) → optional description box → optional name → Submit Complaint</small></div>
+      <div class="arrow">▼</div>
+      <div class="box store"><b>Complaint is saved privately</b><small>Status starts as “new” · a copy of the table and option names is kept so history stays correct even if the owner renames things later · it never becomes a Google review → “Thank you for letting us know.”</small></div>
+      <div class="arrow">▼</div>
+      <div class="box process"><b>Owner handles it in the inbox</b><small>Filter by new / in progress / resolved / closed · see full details (ID, branch, table, options, date and time) · change status · write private notes that customers can never see</small></div>
+    </div>
+  </section>
+
+  <section class="card" id="level2c">
+    <h2>Staff Attendance — Daily Marking With Auto-Cleanup</h2>
+    <p class="sub">Only the last 6 months of attendance are kept.</p>
+    <div class="flow">
+      <div class="box process"><b>Mark the day</b><small>For each staff member pick present, absent or on leave and press Save → anything older than 6 months for that business is cleaned up on the spot</small></div>
+      <div class="arrow">▼</div>
+      <div class="row c2">
+        <div class="box process"><b>Calendar + totals</b><small>A month calendar per staff member with color-coded days, plus present/absent/leave totals for the last 30 days</small></div>
+        <div class="box process"><b>Manual cleanup + demo tools</b><small>A “delete older than 6 months” button · ready-made commands to create 7 months of sample data or clean up on a schedule</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="level2d">
+    <h2>New Business Setup — Everything Created Together</h2>
+    <p class="sub">The admin fills one form; the system creates all four pieces together so nothing is left half-done.</p>
+    <div class="flow">
+      <div class="box entity"><b>Admin enters</b><small>Business name, web-address name, owner details, and plan (monthly ₹2000, 6-month or 12-month)</small></div>
+      <div class="arrow">▼</div>
+      <div class="row c4">
+        <div class="box store"><b>Business record</b><small>marked active</small></div>
+        <div class="box store"><b>Owner login</b><small>password stored safely scrambled</small></div>
+        <div class="box store"><b>Subscription</b><small>with expiry date</small></div>
+        <div class="box store"><b>First QR code</b><small>for the whole business</small></div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="box entity"><b>Welcome email</b><small>Login ID, temporary password and dashboard link are mailed to the owner</small></div>
+    </div>
+    <p class="branch-label">Good to know</p>
+    <div class="box note"><b>Expired or paused accounts</b><small>If a plan ends or the account is paused, customers see a friendly notice instead of the review pages — but all old data stays safe. The admin can extend or restart the plan anytime.</small></div>
+  </section>
+
+  <section class="card" id="cross">
+    <h2>House Rules — Things That Apply Everywhere</h2>
+    <p class="sub">How the website stays safe, fresh and easy to use on all pages.</p>
+    <ul class="tight">
+      <li><b>Everyone sees only their own business:</b> owners log in securely, and every list is filtered to their business — one café can never see another café's complaints or data.</li>
+      <li><b>Pages refresh themselves:</b> if nobody touches the screen for 30 seconds, the page quietly reloads its data (anything you already typed stays as it is).</li>
+      <li><b>Buttons show they are working:</b> every Save/Update/Delete button spins and disables itself while the work is being done, so nobody taps twice by mistake.</li>
+      <li><b>Works on phones too:</b> the 3-dot button at the top-left opens the side menu with all sections; computer screens keep the normal sidebar.</li>
+      <li><b>QR code web addresses:</b> printed QRs always contain the main website address; the on-screen Preview buttons use short links so testing on a laptop works too.</li>
+      <li><b>Business photos live in photo storage:</b> logos and cover images are shrunk automatically and kept in Firebase photo storage, then shown on the customer pages.</li>
+      <li><b>Long lists scroll in place:</b> tables, QR grids and option lists scroll inside their own boxes instead of making the whole page endless.</li>
+    </ul>
+  </section>
+
+  <footer>ReviewTap plain-English guide · single file, works offline · print via browser (Ctrl+P)</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReviewTap — Dynamic &amp; Behavioral Modelling (Plain-English Guide)</title>
+<style>
+  :root{--entity:#1d4ed8;--entity-bg:#eff6ff;--process:#047857;--process-bg:#ecfdf5;--store:#7c3aed;--store-bg:#f5f3ff;--note:#b45309;--note-bg:#fffbeb;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0}
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:#f8fafc;margin:0;padding:0;line-height:1.6}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 20px 64px}
+  header.hero{background:linear-gradient(135deg,#9a3412,#4c1d95);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}
+  header.hero h1{margin:0 0 6px;font-size:30px}
+  header.hero p{margin:0;opacity:.85;font-size:14px}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:24px;font-size:13px}
+  nav.toc a{color:var(--entity);text-decoration:none;margin-right:14px}
+  nav.toc a:hover{text-decoration:underline}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  section.card h2{margin:0 0 4px;font-size:21px}
+  section.card .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f1f5f9;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#475569}
+  tr:last-child td{border-bottom:none}
+  code.id{background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px;font-family:Consolas,monospace;white-space:nowrap}
+  .states{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0}
+  .state{border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700;border:2px solid}
+  .s-new{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
+  .s-prog{background:#fef3c7;border-color:#fcd34d;color:#92400e}
+  .s-ok{background:#d1fae5;border-color:#6ee7b7;color:#065f46}
+  .s-off{background:#e2e8f0;border-color:#cbd5e1;color:#475569}
+  .s-blue{background:#dbeafe;border-color:#93c5fd;color:#1e40af}
+  .s-arrow{color:#94a3b8;font-weight:700}
+  ol.steps{margin:6px 0;padding-left:22px;font-size:13px}
+  ol.steps li{margin-bottom:8px}
+  ul.tight{margin:6px 0;padding-left:20px;font-size:13px}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
+  @media print{body{background:#fff}section.card{box-shadow:none;break-inside:avoid}nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>ReviewTap — Dynamic &amp; Behavioral Modelling</h1>
+    <p>How things change over time: statuses, what triggers each change, and step-by-step journeys &bull; 5 Sep 2026</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#complaint">Complaint Lifecycle</a>
+    <a href="#feedback">Feedback Lifecycle</a>
+    <a href="#account">Account &amp; QR States</a>
+    <a href="#attendance">Attendance Cycle</a>
+    <a href="#journeys">User Journeys</a>
+    <a href="#related">Related Docs</a>
+  </nav>
+
+  <section class="card" id="complaint">
+    <h2>Complaint Lifecycle — New → In Progress → Resolved → Closed</h2>
+    <p class="sub">Every table complaint is born “new” and the owner moves it forward. Any step can be revisited.</p>
+    <div class="states">
+      <span class="state s-new">NEW (automatic on submit)</span><span class="s-arrow">→</span>
+      <span class="state s-prog">IN PROGRESS (owner starts work)</span><span class="s-arrow">→</span>
+      <span class="state s-ok">RESOLVED (fixed)</span><span class="s-arrow">→</span>
+      <span class="state s-off">CLOSED (filed away)</span>
+    </div>
+    <table>
+      <tr><th>What changes it</th><th>Who</th><th>What happens behind the scenes</th></tr>
+      <tr><td>Customer presses Submit</td><td>Customer</td><td>Complaint saved with status “new”, table + option name copies kept</td></tr>
+      <tr><td>Owner picks a new status + Update</td><td>Owner</td><td>Status saved; inbox counts refresh immediately</td></tr>
+      <tr><td>Owner adds a private note</td><td>Owner</td><td>Note saved with author + time; never shown to customers</td></tr>
+      <tr><td>Owner deletes the table/option/QR</td><td>Owner</td><td>Old complaints stay readable thanks to the saved name copies</td></tr>
+      <tr><td>QR is switched off</td><td>Owner</td><td>New scans see “currently unavailable”; old complaints untouched</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="feedback">
+    <h2>Private Feedback Lifecycle — Unread → Read → Resolved</h2>
+    <p class="sub">Simpler than complaints: read it, fix it, mark it done (or delete it).</p>
+    <div class="states">
+      <span class="state s-new">UNREAD (automatic on submit)</span><span class="s-arrow">→</span>
+      <span class="state s-blue">READ (owner saw it)</span><span class="s-arrow">→</span>
+      <span class="state s-ok">RESOLVED (handled)</span>
+    </div>
+    <ul class="tight">
+      <li>“Mark Read” moves unread → read. “Resolve” moves anything → resolved. Trash deletes it.</li>
+      <li>Staff star-ratings (behaviour/speed/overall) never change once saved — they are a permanent record.</li>
+      <li>AI review drafts are saved with the customer-edited text and a flag if they clicked through to Google.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="account">
+    <h2>Account, Plan &amp; QR States — Who Sees What, When</h2>
+    <p class="sub">Statuses act like switches that open or close parts of the website.</p>
+    <div class="states">
+      <span class="state s-ok">Business: ACTIVE</span><span class="s-arrow">⇄</span>
+      <span class="state s-prog">SUSPENDED (paused by admin)</span>
+      <span class="state s-off">EXPIRED (plan ran out)</span>
+    </div>
+    <ul class="tight">
+      <li><b>Active:</b> everything works — scans, reviews, complaints, dashboards.</li>
+      <li><b>Suspended / expired:</b> customers see a friendly notice instead of review/complaint pages; all saved data stays safe and comes back when reactivated.</li>
+      <li><b>Staff active/inactive:</b> inactive staff disappear from the QR list but their past ratings stay.</li>
+      <li><b>Table active/inactive:</b> new QRs can only be made for active tables.</li>
+      <li><b>QR active/disabled:</b> a disabled table QR shows “currently unavailable” but old complaints remain.</li>
+      <li><b>Complaint option enabled/disabled:</b> disabled options vanish from the customer form instantly — no reprinting.</li>
+      <li><b>Plan (monthly / 6-month / 12-month):</b> extending adds months to the expiry date and flips the business back to active.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="attendance">
+    <h2>Attendance Cycle — Mark, View, Auto-Clean</h2>
+    <p class="sub">One status per staff member per day, with a rolling 6-month window.</p>
+    <div class="states">
+      <span class="state s-ok">PRESENT</span>
+      <span class="state s-new">ABSENT</span>
+      <span class="state s-prog">ON LEAVE</span>
+    </div>
+    <ol class="steps">
+      <li>Owner picks a status per person and presses <b>Save</b> (button spins while saving).</li>
+      <li>Saving also <b>deletes that business's records older than 6 months</b> — history never grows forever.</li>
+      <li>The calendar, last-5-day dots and 30-day totals update; the retention card shows the window start date.</li>
+      <li>The <b>purge button</b> or the scheduled cleanup command can delete old months on demand (with a dry-run mode that only reports).</li>
+    </ol>
+  </section>
+
+  <section class="card" id="journeys">
+    <h2>User Journeys — Click-by-Click Walks</h2>
+    <p class="sub">The exact paths from the live walkthroughs.</p>
+    <table>
+      <tr><th>Who &amp; goal</th><th>Steps</th><th>Ends with</th></tr>
+      <tr><td><b>Customer → Google review</b></td><td>1 Scan QR → 2 welcome page → 3 “AI Review Assistant” → 4 answer 2–3 questions → 5 review appears, edit if wanted → 6 “Copy &amp; Continue to Google” → 7 paste on Google</td><td>Thank-you screen; click tracked privately</td></tr>
+      <tr><td><b>Customer → rate staff</b></td><td>1 Scan staff QR → 2 give 3 star-ratings + optional comment → 3 Continue</td><td>Lands on business page; rating saved</td></tr>
+      <tr><td><b>Customer → private feedback</b></td><td>1 “Private Feedback” → 2 stars + liked/improve + optional name → 3 Send</td><td>Thank-you screen; inbox shows NEW/unread</td></tr>
+      <tr><td><b>Customer → table complaint</b></td><td>1 Scan table QR → 2 branded page shows table → 3 pick one or more options → 4 optional description → 5 Submit</td><td>“Thank you for letting us know.”; inbox shows NEW</td></tr>
+      <tr><td><b>Owner → morning routine</b></td><td>1 Open Overview (fresh data after 30 s idle) → 2 mark attendance → 3 triage complaints/feedback → 4 check staff scores</td><td>All statuses/notes saved; buttons confirm</td></tr>
+      <tr><td><b>Owner → new table QR</b></td><td>1 QR &amp; NFC page → 2 add table → 3 create QR for it → 4 download PNG → 5 print &amp; place on table</td><td>Scans work instantly; link never changes</td></tr>
+      <tr><td><b>Admin → new business</b></td><td>1 “Add New Business” → 2 fill form + plan → 3 submit</td><td>Business + login + plan + QR created together; welcome email sent</td></tr>
+      <tr><td><b>Anyone idle 30 s</b></td><td>1 Stop touching → 2 timer fires → 3 page data reloads quietly</td><td>Fresh numbers; typed text untouched</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="related">
+    <h2>Related Documents</h2>
+    <ul class="tight">
+      <li><a href="ReviewTap-DFD.html">DFD — how information flows</a></li>
+      <li><a href="ReviewTap-Structural-Modelling.html">Structural — pages, blocks, addresses, files</a></li>
+      <li><a href="ReviewTap-Data-Storage-Modelling.html">Data &amp; Storage — tables, fields, relationships</a></li>
+      <li><a href="ReviewTap-Requirements-User-Interaction-Modelling.html">Requirements &amp; User Interaction — what each role can do</a></li>
+    </ul>
+  </section>
+
+  <footer>ReviewTap dynamic &amp; behavioral modelling · single file, works offline · print via browser (Ctrl+P)</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReviewTap — Requirements &amp; User Interaction Modelling (Plain-English Guide)</title>
+<style>
+  :root{--entity:#1d4ed8;--entity-bg:#eff6ff;--process:#047857;--process-bg:#ecfdf5;--store:#7c3aed;--store-bg:#f5f3ff;--note:#b45309;--note-bg:#fffbeb;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0}
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:#f8fafc;margin:0;padding:0;line-height:1.6}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 20px 64px}
+  header.hero{background:linear-gradient(135deg,#065f46,#1e3a8a);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}
+  header.hero h1{margin:0 0 6px;font-size:30px}
+  header.hero p{margin:0;opacity:.85;font-size:14px}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:24px;font-size:13px}
+  nav.toc a{color:var(--entity);text-decoration:none;margin-right:14px}
+  nav.toc a:hover{text-decoration:underline}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  section.card h2{margin:0 0 4px;font-size:21px}
+  section.card .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f1f5f9;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#475569}
+  tr:last-child td{border-bottom:none}
+  code.id{background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px;font-family:Consolas,monospace;white-space:nowrap}
+  .box{border:2px solid;border-radius:12px;padding:10px 14px;font-size:13px;background:#fff;margin-bottom:10px}
+  .box b{display:block;font-size:13px}
+  .box small{color:var(--muted);font-size:12px}
+  .box.entity{border-color:var(--entity);background:var(--entity-bg)}
+  .box.process{border-color:var(--process);background:var(--process-bg)}
+  .box.note{border-color:var(--note);background:var(--note-bg)}
+  .row{display:grid;gap:12px}
+  .row.c3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:760px){.row.c3{grid-template-columns:1fr}}
+  ul.tight{margin:6px 0;padding-left:20px;font-size:13px}
+  .yes{color:#047857;font-weight:700}.no{color:#b91c1c;font-weight:700}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
+  @media print{body{background:#fff}section.card{box-shadow:none;break-inside:avoid}nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>ReviewTap — Requirements &amp; User Interaction Modelling</h1>
+    <p>What each kind of user can do, on phones and on computers &bull; 5 Sep 2026</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#roles">User Roles</a>
+    <a href="#customer">Customer Can-Do List</a>
+    <a href="#owner">Owner Can-Do List</a>
+    <a href="#admin">Admin Can-Do List</a>
+    <a href="#devices">Phone vs Computer</a>
+    <a href="#promises">Quality Promises</a>
+    <a href="#related">Related Docs</a>
+  </nav>
+
+  <section class="card" id="roles">
+    <h2>User Roles — Three Kinds of People</h2>
+    <div class="row c3">
+      <div class="box entity"><b>Visitor / Customer (no login)</b><small>Anyone who opens the site or scans a QR: reads info pages, leaves reviews, feedback and complaints</small></div>
+      <div class="box entity"><b>Business Owner (login)</b><small>One business only: staff, QRs, inbox, attendance, reports, branding, plan view</small></div>
+      <div class="box entity"><b>Platform Admin (login)</b><small>All businesses: create tenants, plans, global staff + AI views</small></div>
+    </div>
+  </section>
+
+  <section class="card" id="customer">
+    <h2>Customer Can-Do List (no account, no login, no app to install)</h2>
+    <table>
+      <tr><th>#</th><th>Customer can…</th><th>How</th></tr>
+      <tr><td>C1</td><td>Read about the product and prices, send a contact message</td><td>Marketing pages; message emailed to the team</td></tr>
+      <tr><td>C2</td><td>Open their business's branded page by scanning a QR or tapping NFC</td><td>Business link; works on any modern phone camera</td></tr>
+      <tr><td>C3</td><td>Rate a staff member (behaviour, speed, overall + comment)</td><td>Staff QR → star form → Continue</td></tr>
+      <tr><td>C4</td><td>Get AI help writing a Google review and post it</td><td>Answer 2–3 questions → edit draft → “Copy &amp; Continue to Google”</td></tr>
+      <tr><td>C5</td><td>Send private feedback (stars + liked/improve + optional contact)</td><td>Feedback form → thank-you; management-only inbox</td></tr>
+      <tr><td>C6</td><td>Complain from their table without typing any table number</td><td>Table QR → table auto-detected → pick option(s) → optional note → Submit</td></tr>
+      <tr><td>C7</td><td>Pick more than one complaint reason at once</td><td>Multi-pick chips with a live “n selected” counter</td></tr>
+      <tr><td>C8</td><td>Get a clear message if a QR is switched off or a business is paused</td><td>“Currently unavailable” / friendly notice screens</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="owner">
+    <h2>Owner Can-Do List (login, own business only)</h2>
+    <table>
+      <tr><th>#</th><th>Owner can…</th><th>Where</th></tr>
+      <tr><td>O1</td><td>See counts, recent ratings and unread feedback at a glance</td><td>Overview dashboard</td></tr>
+      <tr><td>O2</td><td>Add / edit / pause / delete staff; see each person's QR, ratings and trends; compare staff</td><td>Employees section</td></tr>
+      <tr><td>O3</td><td>Read charts: scans, Google clicks, AI reviews, QR-vs-NFC and phone-vs-computer splits</td><td>Analytics</td></tr>
+      <tr><td>O4</td><td>Triage complaints (status flow, private notes) and feedback (read/resolve/delete) in one inbox</td><td>Complaints and Private Feedback</td></tr>
+      <tr><td>O5</td><td>Download/print business + staff QRs; test links without leaving the page</td><td>QR &amp; NFC Codes (top)</td></tr>
+      <tr><td>O6</td><td>Create tables, print one QR per table, enable/disable codes, customize options + page text</td><td>QR &amp; NFC Codes (complaint part)</td></tr>
+      <tr><td>O7</td><td>Mark daily attendance; browse the calendar; see 30-day totals; purge old months</td><td>Staff Attendance</td></tr>
+      <tr><td>O8</td><td>Edit business profile, brand color, logo/cover photos, Google review link</td><td>Business Profile</td></tr>
+      <tr><td>O9</td><td>View current plan and expiry date (renewals via admin — no online payments)</td><td>Subscription</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="admin">
+    <h2>Admin Can-Do List (login, all businesses)</h2>
+    <table>
+      <tr><th>#</th><th>Admin can…</th><th>Where</th></tr>
+      <tr><td>A1</td><td>See totals across every business, and add a new business (account + plan + QR made together)</td><td>Overview, Businesses, Create form</td></tr>
+      <tr><td>A2</td><td>Pause / restart / delete a business (customers then see a notice; data is kept)</td><td>Businesses list</td></tr>
+      <tr><td>A3</td><td>Extend plans (+6/+12 months), flip plan status (emails the owner)</td><td>Subscriptions</td></tr>
+      <tr><td>A4</td><td>Browse every staff member and AI-usage totals across tenants (read-only watching)</td><td>Staff Directory, AI Usage</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="devices">
+    <h2>Phone vs Computer — Every Page Reachable on Both</h2>
+    <p class="sub"><span class="yes">Yes</span> = big touch-friendly buttons and menus verified in the 0-to-end check.</p>
+    <table>
+      <tr><th>Page</th><th>Phone</th><th>Computer</th><th>How it adapts</th></tr>
+      <tr><td>Marketing + login</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Layouts stack; top menu collapses</td></tr>
+      <tr><td>Customer review / complaint pages</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Mobile-first cards (max phone width), big option chips, full-width buttons</td></tr>
+      <tr><td>Owner dashboard (all 8 sections)</td><td class="yes">Yes</td><td class="yes">Yes</td><td>3-dot button opens slide-in menu; forms stack; tables scroll sideways; calendar cells shrink</td></tr>
+      <tr><td>Admin (all 5 sections)</td><td class="yes">Yes</td><td class="yes">Yes</td><td>3-dot button opens dark slide-in menu; tables scroll sideways</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="promises">
+    <h2>Quality Promises — Non-Negotiable Behaviors</h2>
+    <ul class="tight">
+      <li><b>Private stays private:</b> feedback, complaints and internal notes are never posted publicly and never shown to customers.</li>
+      <li><b>No forced sign-ups:</b> customers never create accounts; names and contacts are always optional.</li>
+      <li><b>History is honest:</b> renamed tables/options never rewrite old complaints (saved copies); star-ratings are never edited.</li>
+      <li><b>Fresh but stable:</b> data reloads after 30 s idle without wiping typed text; every button shows a spinner while working so double-taps can't duplicate.</li>
+      <li><b>Scales down gracefully:</b> paused/expired businesses show notices, disabled QRs show “unavailable” — never a raw error.</li>
+      <li><b>Light database:</b> attendance older than 6 months is cleaned automatically; QR pictures are generated on the fly, never stored.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="related">
+    <h2>Related Documents</h2>
+    <ul class="tight">
+      <li><a href="ReviewTap-DFD.html">DFD — how information flows</a></li>
+      <li><a href="ReviewTap-Structural-Modelling.html">Structural — pages, blocks, addresses, files</a></li>
+      <li><a href="ReviewTap-Dynamic-Behavioral-Modelling.html">Dynamic &amp; Behavioral — statuses and step-by-step journeys</a></li>
+      <li><a href="ReviewTap-Data-Storage-Modelling.html">Data &amp; Storage — tables, fields, relationships</a></li>
+    </ul>
+  </section>
+
+  <footer>ReviewTap requirements &amp; user interaction modelling · single file, works offline · print via browser (Ctrl+P)</footer>
+
+</div>
+</body>
+</html>

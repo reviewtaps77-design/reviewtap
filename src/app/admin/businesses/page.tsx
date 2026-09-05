@@ -58,6 +58,7 @@ export default async function BusinessesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-slate-50/75">
               <TableRow>
@@ -167,6 +168,7 @@ export default async function BusinessesPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

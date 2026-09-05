@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth-guard";
 import { Button } from "@/components/ui/button";
+import { AdminMobileNav } from "@/components/admin-mobile-nav";
 import { 
   LayoutDashboard, 
   Building2, 
@@ -84,8 +85,11 @@ export default async function AdminLayout({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shrink-0">
-          <div className="flex items-center gap-2">
+        <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 sm:px-6 shrink-0">
+          <div className="flex items-center gap-1.5">
+            <span className="md:hidden">
+              <AdminMobileNav />
+            </span>
             <h2 className="text-base font-bold text-slate-900">Platform Administration</h2>
             <span className="text-[11px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full border border-indigo-100">
               Hostinger Multi-Tenant

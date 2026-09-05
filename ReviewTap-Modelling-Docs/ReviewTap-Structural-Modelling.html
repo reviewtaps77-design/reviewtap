@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReviewTap — Structural Modelling (Plain-English Guide)</title>
+<style>
+  :root{--entity:#1d4ed8;--entity-bg:#eff6ff;--process:#047857;--process-bg:#ecfdf5;--store:#7c3aed;--store-bg:#f5f3ff;--note:#b45309;--note-bg:#fffbeb;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0}
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--ink);background:#f8fafc;margin:0;padding:0;line-height:1.6}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 20px 64px}
+  header.hero{background:linear-gradient(135deg,#0f766e,#1e3a8a);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}
+  header.hero h1{margin:0 0 6px;font-size:30px}
+  header.hero p{margin:0;opacity:.85;font-size:14px}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:24px;font-size:13px}
+  nav.toc a{color:var(--entity);text-decoration:none;margin-right:14px}
+  nav.toc a:hover{text-decoration:underline}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  section.card h2{margin:0 0 4px;font-size:21px}
+  section.card .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f1f5f9;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#475569}
+  tr:last-child td{border-bottom:none}
+  code.id{background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px;font-family:Consolas,monospace;white-space:nowrap}
+  .box{border:2px solid;border-radius:12px;padding:10px 14px;font-size:13px;background:#fff}
+  .box b{display:block;font-size:13px}
+  .box small{color:var(--muted);font-size:12px}
+  .box.entity{border-color:var(--entity);background:var(--entity-bg)}
+  .box.process{border-color:var(--process);background:var(--process-bg)}
+  .box.store{border-color:var(--store);background:var(--store-bg)}
+  .box.note{border-color:var(--note);background:var(--note-bg)}
+  .row{display:grid;gap:12px}
+  .row.c2{grid-template-columns:1fr 1fr}.row.c3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:760px){.row.c2,.row.c3{grid-template-columns:1fr}}
+  .flow{display:flex;flex-direction:column;align-items:stretch}
+  .arrow{text-align:center;color:#94a3b8;font-weight:700;padding:3px 0;font-size:15px}
+  .arrow small{display:block;font-weight:600;color:var(--muted);font-size:11px}
+  pre.tree{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:16px 18px;font-size:12.5px;overflow-x:auto;line-height:1.7}
+  ul.tight{margin:6px 0;padding-left:20px;font-size:13px}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
+  @media print{body{background:#fff}section.card{box-shadow:none;break-inside:avoid}nav.toc{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>ReviewTap — Structural Modelling</h1>
+    <p>What the website is built from: pages, building blocks, web addresses, and file layout &bull; 5 Sep 2026</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#layers">Building Layers</a>
+    <a href="#routes">Web Address Map</a>
+    <a href="#components">Reusable Building Blocks</a>
+    <a href="#files">File Layout</a>
+    <a href="#related">Related Docs</a>
+  </nav>
+
+  <section class="card" id="layers">
+    <h2>Building Layers — How the Pieces Stack</h2>
+    <p class="sub">Top to bottom: what you see → what does the work → where info is saved.</p>
+    <div class="flow">
+      <div class="box entity"><b>1 · Pages (what you see)</b><small>Marketing site, customer pages, owner dashboard, admin area — plain-English screens in the Web Address Map below</small></div>
+      <div class="arrow">▼<small>buttons and forms call…</small></div>
+      <div class="box process"><b>2 · Work-doers (server actions + web services)</b><small>Save attendance, create QRs, submit complaints, AI writing, photo upload — each form on screen calls exactly one work-doer (see Button Map in the Requirements doc)</small></div>
+      <div class="arrow">▼<small>checked by…</small></div>
+      <div class="box process"><b>3 · Gatekeepers</b><small>Login check (who are you?) + role check (owner or admin?) + business check (only your own data) — applied on every protected page and work-doer</small></div>
+      <div class="arrow">▼<small>routed by…</small></div>
+      <div class="box process"><b>4 · Address router (middleware)</b><small>Reads the web address and decides: marketing page, customer page (which business?), owner/admin page, or public complaint link — adds small security headers to every response</small></div>
+      <div class="arrow">▼</div>
+      <div class="row c2">
+        <div class="box store"><b>5a · Database (MySQL)</b><small>13 tables — accounts, businesses, staff, QRs, visits, ratings, reviews, feedback, complaints, attendance (full field list in the Data doc)</small></div>
+        <div class="box entity"><b>5b · Outside helpers</b><small>Google (posted reviews) · AI helper (review drafts) · Email service (mails) · Firebase (business photos + visit stats)</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="routes">
+    <h2>Web Address Map — Every Page, Who Can Open It</h2>
+    <p class="sub">“Anyone” = no login needed. Owner/admin pages bounce strangers to the login screen.</p>
+    <table>
+      <tr><th>Web address</th><th>Page</th><th>Who</th></tr>
+      <tr><td><code class="id">/</code>, <code class="id">/about</code>, <code class="id">/how-it-works</code>, <code class="id">/pricing</code></td><td>Home, about, how it works, plans</td><td>Anyone</td></tr>
+      <tr><td><code class="id">/contact</code>, <code class="id">/privacy</code>, <code class="id">/refund</code>, <code class="id">/terms</code></td><td>Contact form, legal pages</td><td>Anyone</td></tr>
+      <tr><td><code class="id">/login</code>, <code class="id">/forgot-password</code></td><td>Sign in, password reset</td><td>Anyone</td></tr>
+      <tr><td><code class="id">/complaint/&lt;secret-code&gt;</code></td><td>Table complaint form (branded per business)</td><td>Anyone with the QR</td></tr>
+      <tr><td><code class="id">/biz/&lt;business&gt;</code>, <code class="id">/biz/&lt;business&gt;/staff/&lt;person&gt;</code></td><td>Customer review landing + staff rating</td><td>Anyone with the QR</td></tr>
+      <tr><td><code class="id">…/ai-review</code>, <code class="id">…/feedback</code>, <code class="id">…/thank-you</code></td><td>AI writing help, private feedback, thanks screen</td><td>Anyone with the QR</td></tr>
+      <tr><td><code class="id">/dashboard</code></td><td>Overview: counts, recent ratings &amp; feedback</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/employees</code>, <code class="id">…/add</code>, <code class="id">…/[id]</code>, <code class="id">…/compare</code></td><td>Staff list, add, detail + QR, side-by-side compare</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/analytics</code></td><td>Scan/review charts, QR vs NFC split, phone vs computer</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/complaints-and-feedback</code></td><td>Merged inbox: table complaints + private feedback</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/qr-nfc</code></td><td>Business QR, staff QRs, table complaint QRs, options, page settings</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/attendance</code></td><td>Daily marking, calendar, 30-day totals, cleanup</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/profile</code>, <code class="id">…/subscription</code></td><td>Business branding + photos, plan and expiry view</td><td>Owner</td></tr>
+      <tr><td><code class="id">/admin</code>, <code class="id">/admin/businesses</code>, <code class="id">…/create</code></td><td>Platform overview, tenant list, new business form</td><td>Admin</td></tr>
+      <tr><td><code class="id">/admin/subscriptions</code>, <code class="id">/admin/employees</code>, <code class="id">/admin/ai-usage</code></td><td>Plans, all-staff directory, AI usage across businesses</td><td>Admin</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="components">
+    <h2>Reusable Building Blocks — Used on Many Pages</h2>
+    <p class="sub">Shared pieces so every page looks and behaves the same.</p>
+    <div class="row c3">
+      <div class="box process"><b>SubmitButton</b><small>Every Save/Update/Delete button: spins + disables itself while work runs</small></div>
+      <div class="box process"><b>AutoRefreshOnIdle</b><small>Watches the whole site; reloads data after 30 seconds of no touching</small></div>
+      <div class="box process"><b>AttendanceCalendar</b><small>Month grid with color-coded days, staff picker, prev/next month</small></div>
+      <div class="box process"><b>ComplaintForm</b><small>Multi-pick option chips, optional description box, thank-you state</small></div>
+      <div class="box process"><b>DashboardMobileNav / AdminMobileNav</b><small>3-dot button → slide-in side menu on phones (all sections)</small></div>
+      <div class="box process"><b>BusinessImageUpload</b><small>Logo/cover picker: shrinks photos, shows upload %, saves to photo storage</small></div>
+      <div class="box entity"><b>FirebaseProvider</b><small>Quietly starts visit statistics (optional, never blocks pages)</small></div>
+      <div class="box process"><b>UI kit (button, card, input, badge, table…)</b><small>Same rounded, soft-color look on every screen</small></div>
+      <div class="box process"><b>StarRating, StatCard, EmptyState</b><small>Star picker, dashboard number tiles, friendly “nothing here yet” boxes</small></div>
+    </div>
+  </section>
+
+  <section class="card" id="files">
+    <h2>File Layout — Where Things Live in the Project</h2>
+    <p class="sub">Simplified map of the project folders.</p>
+<pre class="tree">src/
+├─ app/                          ← one folder per web address above
+│  ├─ marketing/…  complaint/[token]/…  tenant/…
+│  ├─ dashboard/…  admin/…  api/…
+│  └─ layout.tsx + middleware.ts (address router)
+├─ actions/                      ← the work-doers
+│  auth, admin, business, employee, attendance,
+│  rating, review, feedback, complaint, contact
+├─ lib/                          ← helper tools
+│  auth, auth-guard, db, qr, openai, email,
+│  complaint, attendance-retention, validation, …
+├─ components/                   ← reusable building blocks above
+prisma/schema.prisma             ← database blueprint (13 tables)
+scripts/                         ← sample-data + cleanup commands
+ReviewTap-*.html                 ← this modelling document set</pre>
+  </section>
+
+  <section class="card" id="related">
+    <h2>Related Documents</h2>
+    <p class="sub">The rest of the modelling set (same plain-English style).</p>
+    <ul class="tight">
+      <li><a href="ReviewTap-DFD.html">DFD — how information flows</a></li>
+      <li><a href="ReviewTap-Dynamic-Behavioral-Modelling.html">Dynamic &amp; Behavioral — statuses and step-by-step journeys</a></li>
+      <li><a href="ReviewTap-Data-Storage-Modelling.html">Data &amp; Storage — tables, fields, relationships</a></li>
+      <li><a href="ReviewTap-Requirements-User-Interaction-Modelling.html">Requirements &amp; User Interaction — what each role can do</a></li>
+    </ul>
+  </section>
+
+  <footer>ReviewTap structural modelling · single file, works offline · print via browser (Ctrl+P)</footer>
+
+</div>
+</body>
+</html>
