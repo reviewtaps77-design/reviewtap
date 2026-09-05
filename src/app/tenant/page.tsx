@@ -88,64 +88,64 @@ export default async function TenantLandingPage() {
         </div>
       </div>
 
-      {/* 3 CTAs */}
-      <div className="w-full space-y-3.5 my-auto">
-        {/* CTA 1: Direct Google Review */}
-        <a
-          href={business.googleReviewUrl || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative flex items-center p-4 w-full rounded-2xl text-white shadow-md transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
-          style={{ backgroundColor: brandColor }}
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 mr-4 shrink-0">
-            <Star className="w-6 h-6 fill-amber-300 text-amber-300" />
-          </div>
-          <div className="flex-1 text-left">
-            <div className="flex items-center gap-1.5 font-bold text-base">
-              <span>Write a Google Review</span>
-              <ExternalLink className="w-4 h-4 opacity-70 group-hover:opacity-100" />
-            </div>
-            <span className="block text-xs text-white/85">
-              Direct 5-star review on Google Maps
-            </span>
-          </div>
-        </a>
-
-        {/* CTA 2: AI Review Assistant */}
+      {/* CTAs — AI first and bold, others compact below */}
+      <div className="w-full space-y-3 my-auto">
+        {/* CTA 1: AI Review Assistant (hero) */}
         <Link
           href={`${tenantBase}/ai-review${employeeSlug ? `?employee=${encodeURIComponent(employeeSlug)}` : ""}`}
-          className="group relative flex items-center p-4 w-full rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+          className="group relative flex items-center p-5 w-full rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg transition-all duration-200 hover:shadow-xl active:scale-[0.98]"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 mr-4 shrink-0">
-            <Sparkles className="w-6 h-6 text-purple-200 animate-pulse" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/20 mr-4 shrink-0">
+            <Sparkles className="w-7 h-7 text-purple-200 animate-pulse" />
           </div>
           <div className="flex-1 text-left">
-            <div className="flex items-center gap-1.5 font-bold text-base">
+            <div className="flex items-center gap-1.5 font-extrabold text-lg">
               <span>AI Review Assistant</span>
               <span className="text-[10px] uppercase font-extrabold bg-white/25 px-1.5 py-0.5 rounded-full">
                 Fast & Easy
               </span>
             </div>
-            <span className="block text-xs text-purple-100">
+            <span className="block text-sm text-purple-100 font-medium">
               Answer 3 quick taps & AI writes your review
             </span>
           </div>
         </Link>
 
-        {/* CTA 3: Private Feedback */}
-        <Link
-          href={`${tenantBase}/feedback${employeeSlug ? `?employee=${encodeURIComponent(employeeSlug)}` : ""}`}
-          className="group flex items-center p-4 w-full bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-2xl transition-all duration-200 border border-slate-200/80 shadow-sm active:scale-[0.98]"
+        {/* CTA 2: Direct Google Review (compact) */}
+        <a
+          href={business.googleReviewUrl || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative flex items-center p-3 w-full rounded-2xl text-white shadow transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+          style={{ backgroundColor: brandColor }}
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-200/80 mr-4 text-slate-600 shrink-0">
-            <MessageSquare className="w-6 h-6" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 mr-3 shrink-0">
+            <Star className="w-5 h-5 fill-amber-300 text-amber-300" />
           </div>
           <div className="flex-1 text-left">
-            <span className="block font-bold text-base text-slate-800">
+            <div className="flex items-center gap-1.5 font-bold text-sm">
+              <span>Write a Google Review</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
+            </div>
+            <span className="block text-[11px] text-white/85">
+              Direct 5-star review on Google Maps
+            </span>
+          </div>
+        </a>
+
+        {/* CTA 3: Private Feedback (compact) */}
+        <Link
+          href={`${tenantBase}/feedback${employeeSlug ? `?employee=${encodeURIComponent(employeeSlug)}` : ""}`}
+          className="group flex items-center p-3 w-full bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-2xl transition-all duration-200 border border-slate-200/80 shadow-sm active:scale-[0.98]"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200/80 mr-3 text-slate-600 shrink-0">
+            <MessageSquare className="w-5 h-5" />
+          </div>
+          <div className="flex-1 text-left">
+            <span className="block font-bold text-sm text-slate-800">
               Private Feedback
             </span>
-            <span className="block text-xs text-slate-500">
+            <span className="block text-[11px] text-slate-500">
               Send suggestions directly to management
             </span>
           </div>
