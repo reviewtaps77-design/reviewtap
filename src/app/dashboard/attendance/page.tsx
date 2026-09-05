@@ -116,7 +116,7 @@ export default async function AttendancePage() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl border-slate-200/80 shadow-sm bg-white overflow-hidden">
+      <Card id="today" className="rounded-3xl border-slate-200/80 shadow-sm bg-white overflow-hidden scroll-mt-4">
         <CardHeader className="border-b border-slate-100">
           <CardTitle className="flex items-center gap-2 text-base"><CalendarCheck className="h-5 w-5 text-primary" /> Today&apos;s attendance</CardTitle>
         </CardHeader>
@@ -144,7 +144,7 @@ export default async function AttendancePage() {
 
       <Card className="rounded-3xl border-slate-200/80 shadow-sm bg-white overflow-hidden">
         <CardHeader className="border-b border-slate-100">
-          <CardTitle className="text-base">Past attendance records</CardTitle>
+          <CardTitle id="records" className="text-base scroll-mt-4">Past attendance records</CardTitle>
           <p className="text-xs text-slate-500">Quick per-staff summary. See the calendar above for full day-wise history.</p>
           <div className="mt-3 flex flex-wrap gap-2" aria-label="Last 30 days attendance totals">
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-700">
@@ -221,7 +221,7 @@ export default async function AttendancePage() {
 
       <Card className="rounded-3xl border-slate-200/80 shadow-sm bg-white overflow-hidden">
         <CardHeader className="border-b border-slate-100">
-          <CardTitle className="flex items-center gap-2 text-base">
+          <CardTitle id="calendar" className="flex items-center gap-2 text-base scroll-mt-4">
             <CalendarDays className="h-5 w-5 text-primary" /> Attendance calendar
           </CardTitle>
           <p className="text-xs text-slate-500">Month view of history per staff member. Hover any day for details.</p>

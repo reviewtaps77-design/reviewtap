@@ -130,7 +130,7 @@ export default async function QRNFCPage() {
       </div>
 
       {/* Main Business QR Card */}
-      <Card className="rounded-3xl border-slate-200/80 shadow-sm bg-white overflow-hidden">
+      <Card id="business-qr" className="rounded-3xl border-slate-200/80 shadow-sm bg-white overflow-hidden scroll-mt-4">
         <CardHeader className="pb-3 border-b border-slate-100">
           <CardTitle className="text-lg font-bold text-slate-900">Primary Business QR Code</CardTitle>
           <CardDescription className="text-xs">
@@ -183,7 +183,7 @@ export default async function QRNFCPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Staff-Dedicated QR & NFC Codes</h3>
+            <h3 id="staff-qr" className="text-lg font-bold text-slate-900 scroll-mt-4">Staff-Dedicated QR & NFC Codes</h3>
             <p className="text-xs text-slate-500">
               Each staff member has a dedicated URL to track customer ratings directly.
             </p>
@@ -254,7 +254,7 @@ export default async function QRNFCPage() {
         {/* Spots */}
         <Card className="overflow-hidden rounded-3xl border-slate-200/80 bg-white shadow-sm">
           <CardHeader className="border-b border-slate-100">
-          <CardTitle className="text-base">Spots</CardTitle>
+          <CardTitle id="spots" className="text-base scroll-mt-4">Spots</CardTitle>
           <CardDescription className="text-xs">Spots work for every business — tables, rooms, counters or beds. Branch is optional.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4">
@@ -341,7 +341,7 @@ export default async function QRNFCPage() {
         {/* Complaint QR codes */}
         <Card className="overflow-hidden rounded-3xl border-slate-200/80 bg-white shadow-sm">
           <CardHeader className="border-b border-slate-100">
-            <CardTitle className="text-base">Complaint QR codes</CardTitle>
+            <CardTitle id="complaint-codes" className="text-base scroll-mt-4">Complaint QR codes</CardTitle>
             <CardDescription className="text-xs">Assign one QR per spot, print it, and place it at the spot.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4">
@@ -448,7 +448,7 @@ export default async function QRNFCPage() {
         {/* Complaint options */}
         <Card className="overflow-hidden rounded-3xl border-slate-200/80 bg-white shadow-sm">
           <CardHeader className="border-b border-slate-100">
-            <CardTitle className="text-base">Complaint options</CardTitle>
+            <CardTitle id="complaint-options" className="text-base scroll-mt-4">Complaint options</CardTitle>
             <CardDescription className="text-xs">What customers see under &ldquo;What went wrong?&rdquo;. Changes apply instantly — no reprint needed.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4">
@@ -519,7 +519,7 @@ export default async function QRNFCPage() {
         {/* Complaint page settings */}
         <Card className="overflow-hidden rounded-3xl border-slate-200/80 bg-white shadow-sm">
           <CardHeader className="border-b border-slate-100">
-            <CardTitle className="text-base">Complaint page settings</CardTitle>
+            <CardTitle id="complaint-settings" className="text-base scroll-mt-4">Complaint page settings</CardTitle>
             <CardDescription className="text-xs">Heading and description shown on the customer complaint page for {business.name}.</CardDescription>
           </CardHeader>
           <CardContent className="p-4">

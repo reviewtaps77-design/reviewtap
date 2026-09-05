@@ -15,6 +15,7 @@ import {
   EllipsisVertical,
   X,
 } from "lucide-react";
+import { DashboardSearch } from "@/components/dashboard-search";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -119,6 +120,9 @@ export function DashboardMobileNav({
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-4">
+          <div className="pb-2">
+            <DashboardSearch id="dashboard-search-mobile" />
+          </div>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (

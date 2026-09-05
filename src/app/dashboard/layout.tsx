@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardMobileNav } from "@/components/dashboard-mobile-nav";
+import { DashboardSearch } from "@/components/dashboard-search";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -89,6 +90,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <span className="truncate">View Customer Page</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1.5" />
           </a>
+        </div>
+
+        {/* Section search */}
+        <div className="px-4 pb-1">
+          <DashboardSearch id="dashboard-search-desktop" />
         </div>
         
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
