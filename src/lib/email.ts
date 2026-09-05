@@ -3,11 +3,24 @@ import nodemailer from 'nodemailer';
 // Outbound mail goes through Gmail only (Firebase has no native email-sending
 // service). Requires a Google App Password, NOT the regular Gmail password:
 // Google Account → Security → 2-Step Verification → App passwords → Mail.
-const gmailUser = process.env.GMAIL_USER || '';
-const gmailAppPassword = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
+//
+// Credential names (first set one wins):
+//   user: GMAIL_USER, else SMTP_USER (hosting already wires SMTP_* secrets)
+//   pass: GMAIL_APP_PASSWORD, else SMTP_PASS
+// So on hosting you can simply store the Gmail address + App Password under
+// the existing SMTP_USER / SMTP_PASS secret names — no config change needed.
+const gmailUser = process.env.GMAIL_USER || process.env.SMTP_USER || '';
+const gmailAppPassword = (
+  process.env.GMAIL_APP_PASSWORD ||
+  process.env.SMTP_PASS ||
+  ''
+).replace(/\s+/g, '');
 
 const defaultFrom =
-  process.env.GMAIL_FROM || (gmailUser ? `ReviewTap <${gmailUser}>` : '');
+  process.env.GMAIL_FROM ||
+  (gmailUser ? `ReviewTap <${gmailUser}>` : '') ||
+  process.env.SMTP_FROM ||
+  '';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
