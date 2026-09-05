@@ -39,27 +39,41 @@ export async function createComplaintTable(formData: FormData) {
       status: formData.get("status") || "active",
     });
     if (!parsed.success || !parsed.data.name) {
-      return { success: false, error: "Table name is required." };
+      return { success: false, error: "Spot name is required." };
     }
 
     const existing = await db.complaintTable.findUnique({
       where: { businessId_name: { businessId, name: parsed.data.name } },
     });
-    if (existing) return { success: false, error: `Table '${parsed.data.name}' already exists.` };
+    if (existing) return { success: false, error: `Spot '${parsed.data.name}' already exists.` };
 
-    const table = await db.complaintTable.create({
-      data: {
-        businessId,
-        name: parsed.data.name,
-        branch: parsed.data.branch || null,
-        status: parsed.data.status,
-      },
+    // Creating a spot automatically creates its Complaint QR (same transaction),
+    // so owners never have to wire QRs manually. The printed QR stays valid forever.
+    const result = await db.$transaction(async (tx) => {
+      const table = await tx.complaintTable.create({
+        data: {
+          businessId,
+          name: parsed.data.name,
+          branch: parsed.data.branch || null,
+          status: parsed.data.status,
+        },
+      });
+
+      const qr = await tx.complaintQr.create({
+        data: {
+          businessId,
+          tableId: table.id,
+          status: parsed.data.status === "active" ? "active" : "disabled",
+        },
+      });
+
+      return { table, qr };
     });
 
     revalidateComplaintDashboard();
-    return { success: true, tableId: table.id };
+    return { success: true, tableId: result.table.id, qrId: result.qr.id, url: buildComplaintUrl(result.qr.token) };
   } catch (error: any) {
-    return { success: false, error: error?.message || "Failed to create table." };
+    return { success: false, error: error?.message || "Failed to create spot." };
   }
 }
 
@@ -74,7 +88,7 @@ export async function updateComplaintTable(id: string, formData: FormData) {
       status: formData.get("status") || "active",
     });
     if (!parsed.success || !parsed.data.name) {
-      return { success: false, error: "Table name is required." };
+      return { success: false, error: "Spot name is required." };
     }
 
     await db.complaintTable.update({
@@ -89,7 +103,7 @@ export async function updateComplaintTable(id: string, formData: FormData) {
     revalidateComplaintDashboard();
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error?.message || "Failed to update table." };
+    return { success: false, error: error?.message || "Failed to update spot." };
   }
 }
 
@@ -99,7 +113,7 @@ export async function toggleComplaintTableStatus(id: string) {
     const businessId = getSessionBusinessId(session);
 
     const table = await db.complaintTable.findFirst({ where: { id, businessId } });
-    if (!table) return { success: false, error: "Table not found." };
+    if (!table) return { success: false, error: "Spot not found." };
 
     const status = table.status === "active" ? "inactive" : "active";
     await db.complaintTable.update({ where: { id }, data: { status } });
@@ -107,7 +121,7 @@ export async function toggleComplaintTableStatus(id: string) {
     revalidateComplaintDashboard();
     return { success: true, status };
   } catch (error: any) {
-    return { success: false, error: error?.message || "Failed to update table status." };
+    return { success: false, error: error?.message || "Failed to update spot status." };
   }
 }
 
@@ -122,7 +136,7 @@ export async function deleteComplaintTable(id: string) {
     revalidateComplaintDashboard();
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error?.message || "Failed to delete table." };
+    return { success: false, error: error?.message || "Failed to delete spot." };
   }
 }
 
@@ -143,7 +157,7 @@ export async function createComplaintQr(formData: FormData) {
     let tableId: string | null = parsed.data.tableId || null;
     if (tableId) {
       const table = await db.complaintTable.findFirst({ where: { id: tableId, businessId } });
-      if (!table) return { success: false, error: "Selected table not found." };
+      if (!table) return { success: false, error: "Selected spot not found." };
     }
 
     const qr = await db.complaintQr.create({
@@ -178,7 +192,7 @@ export async function updateComplaintQr(id: string, formData: FormData) {
     let tableId: string | null = parsed.data.tableId || null;
     if (tableId) {
       const table = await db.complaintTable.findFirst({ where: { id: tableId, businessId } });
-      if (!table) return { success: false, error: "Selected table not found." };
+      if (!table) return { success: false, error: "Selected spot not found." };
     }
 
     // NOTE: token is never changed, so printed QRs keep working.
@@ -252,7 +266,7 @@ export async function createComplaintCategory(formData: FormData) {
       select: { sortOrder: true },
     });
 
-    await db.complaintCategory.create({
+    const category = await db.complaintCategory.create({
       data: {
         businessId,
         label: parsed.data.label,
@@ -262,7 +276,7 @@ export async function createComplaintCategory(formData: FormData) {
     });
 
     revalidateComplaintDashboard();
-    return { success: true };
+    return { success: true, categoryId: category.id };
   } catch (error: any) {
     return { success: false, error: error?.message || "Failed to add option." };
   }

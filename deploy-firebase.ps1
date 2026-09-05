@@ -71,7 +71,7 @@ Write-Host ""
 if (-not $SkipSecretCheck) {
     Write-Host "Step 4: Checking required environment secrets..." -ForegroundColor Yellow
 
-    $requiredSecrets = @("NEXTAUTH_SECRET", "DATABASE_URL", "OPENAI_API_KEY", "SMTP_HOST", "SMTP_USER", "SMTP_PASS")
+    $requiredSecrets = @("NEXTAUTH_SECRET", "DATABASE_URL", "OPENAI_API_KEY", "GMAIL_USER", "GMAIL_APP_PASSWORD")
     $envContent = Get-Content ".env" -Raw
 
     Write-Host "The following secrets must be set in Firebase Console:" -ForegroundColor Cyan

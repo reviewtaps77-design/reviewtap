@@ -84,15 +84,16 @@
       <tr><th>Web address</th><th>Page</th><th>Who</th></tr>
       <tr><td><code class="id">/</code>, <code class="id">/about</code>, <code class="id">/how-it-works</code>, <code class="id">/pricing</code></td><td>Home, about, how it works, plans</td><td>Anyone</td></tr>
       <tr><td><code class="id">/contact</code>, <code class="id">/privacy</code>, <code class="id">/refund</code>, <code class="id">/terms</code></td><td>Contact form, legal pages</td><td>Anyone</td></tr>
-      <tr><td><code class="id">/login</code>, <code class="id">/forgot-password</code></td><td>Sign in, password reset</td><td>Anyone</td></tr>
-      <tr><td><code class="id">/complaint/&lt;secret-code&gt;</code></td><td>Table complaint form (branded per business)</td><td>Anyone with the QR</td></tr>
+      <tr><td><code class="id">/login</code>, <code class="id">/forgot-password</code>, <code class="id">/reset-password</code></td><td>Sign in, request reset link, set a new password (link valid 1 hour, one-time use)</td><td>Anyone</td></tr>
+      <tr><td><code class="id">/get-started</code></td><td>First-login wizard: profile, staff, spots, options, AI chips, finish</td><td>Owner (first login only)</td></tr>
+      <tr><td><code class="id">/complaint/&lt;secret-code&gt;</code></td><td>Spot complaint form (branded per business)</td><td>Anyone with the QR</td></tr>
       <tr><td><code class="id">/biz/&lt;business&gt;</code>, <code class="id">/biz/&lt;business&gt;/staff/&lt;person&gt;</code></td><td>Customer review landing + staff rating</td><td>Anyone with the QR</td></tr>
-      <tr><td><code class="id">…/ai-review</code>, <code class="id">…/feedback</code>, <code class="id">…/thank-you</code></td><td>AI writing help, private feedback, thanks screen</td><td>Anyone with the QR</td></tr>
+      <tr><td><code class="id">…/ai-review</code>, <code class="id">…/feedback</code>, <code class="id">…/thank-you</code></td><td>AI writing help (quick-pick chips customized per business), private feedback, thanks screen</td><td>Anyone with the QR</td></tr>
       <tr><td><code class="id">/dashboard</code></td><td>Overview: counts, recent ratings &amp; feedback</td><td>Owner</td></tr>
       <tr><td><code class="id">/dashboard/employees</code>, <code class="id">…/add</code>, <code class="id">…/[id]</code>, <code class="id">…/compare</code></td><td>Staff list, add, detail + QR, side-by-side compare</td><td>Owner</td></tr>
       <tr><td><code class="id">/dashboard/analytics</code></td><td>Scan/review charts, QR vs NFC split, phone vs computer</td><td>Owner</td></tr>
-      <tr><td><code class="id">/dashboard/complaints-and-feedback</code></td><td>Merged inbox: table complaints + private feedback</td><td>Owner</td></tr>
-      <tr><td><code class="id">/dashboard/qr-nfc</code></td><td>Business QR, staff QRs, table complaint QRs, options, page settings</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/complaints-and-feedback</code></td><td>Merged inbox: spot complaints + private feedback</td><td>Owner</td></tr>
+      <tr><td><code class="id">/dashboard/qr-nfc</code></td><td>Business QR, staff QRs, spot complaint QRs, complaint options + page settings, AI review quick options</td><td>Owner</td></tr>
       <tr><td><code class="id">/dashboard/attendance</code></td><td>Daily marking, calendar, 30-day totals, cleanup</td><td>Owner</td></tr>
       <tr><td><code class="id">/dashboard/profile</code>, <code class="id">…/subscription</code></td><td>Business branding + photos, plan and expiry view</td><td>Owner</td></tr>
       <tr><td><code class="id">/admin</code>, <code class="id">/admin/businesses</code>, <code class="id">…/create</code></td><td>Platform overview, tenant list, new business form</td><td>Admin</td></tr>
@@ -108,11 +109,14 @@
       <div class="box process"><b>AutoRefreshOnIdle</b><small>Watches the whole site; reloads data after 30 seconds of no touching</small></div>
       <div class="box process"><b>AttendanceCalendar</b><small>Month grid with color-coded days, staff picker, prev/next month</small></div>
       <div class="box process"><b>ComplaintForm</b><small>Multi-pick option chips, optional description box, thank-you state</small></div>
+      <div class="box process"><b>AiReviewClient</b><small>AI review questionnaire driven by the business's own quick-pick chips (loaded by its server page wrapper)</small></div>
+      <div class="box process"><b>Get Started Wizard</b><small>6-step first-login setup (profile, staff, spots, options, AI chips, finish) with progress bar and skip</small></div>
       <div class="box process"><b>DashboardMobileNav / AdminMobileNav</b><small>3-dot button → slide-in side menu on phones (all sections)</small></div>
       <div class="box process"><b>BusinessImageUpload</b><small>Logo/cover picker: shrinks photos, shows upload %, saves to photo storage</small></div>
       <div class="box entity"><b>FirebaseProvider</b><small>Quietly starts visit statistics (optional, never blocks pages)</small></div>
       <div class="box process"><b>UI kit (button, card, input, badge, table…)</b><small>Same rounded, soft-color look on every screen</small></div>
       <div class="box process"><b>StarRating, StatCard, EmptyState</b><small>Star picker, dashboard number tiles, friendly “nothing here yet” boxes</small></div>
+      <div class="box process"><b>Route loading screens</b><small>Animated pulsing placeholders shown while dashboard, admin, customer and complaint pages load</small></div>
     </div>
   </section>
 
@@ -122,14 +126,14 @@
 <pre class="tree">src/
 ├─ app/                          ← one folder per web address above
 │  ├─ marketing/…  complaint/[token]/…  tenant/…
-│  ├─ dashboard/…  admin/…  api/…
+│  ├─ dashboard/…  admin/…  get-started/…  api/…
 │  └─ layout.tsx + middleware.ts (address router)
 ├─ actions/                      ← the work-doers
 │  auth, admin, business, employee, attendance,
-│  rating, review, feedback, complaint, contact
+│  rating, review, feedback, complaint, contact, ai-prompt
 ├─ lib/                          ← helper tools
 │  auth, auth-guard, db, qr, openai, email,
-│  complaint, attendance-retention, validation, …
+│  complaint, ai-prompt, attendance-retention, validation, …
 ├─ components/                   ← reusable building blocks above
 prisma/schema.prisma             ← database blueprint (13 tables)
 scripts/                         ← sample-data + cleanup commands
@@ -152,3 +156,5 @@ ReviewTap-*.html                 ← this modelling document set</pre>
 </div>
 </body>
 </html>
+
+

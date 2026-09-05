@@ -61,4 +61,23 @@ export async function updateBusinessProfile(formData: FormData) {
   }
 }
 
+/** Marks the Get Started wizard as done so the owner lands on the dashboard next time. */
+export async function completeOnboarding() {
+  try {
+    const session = await requireOwner();
+    const businessId = getSessionBusinessId(session);
+
+    await db.business.update({
+      where: { id: businessId },
+      data: { setupCompleted: true },
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to complete onboarding:", error);
+    return { success: false, error: error?.message || "Failed to complete setup." };
+  }
+}
+
 

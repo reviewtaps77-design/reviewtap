@@ -26,11 +26,8 @@ Set these in Firebase App Hosting or local `.env` before build:
 - `NEXT_PUBLIC_ROOT_DOMAIN`
 - `NEXT_PUBLIC_APP_URL`
 - `OPENAI_API_KEY`
-- `SMTP_HOST`
-- `SMTP_PORT`
-- `SMTP_USER`
-- `SMTP_PASS`
-- `SMTP_FROM`
+- `GMAIL_USER`
+- `GMAIL_APP_PASSWORD`
 
 ## Local validation
 

@@ -3,8 +3,9 @@
 import { db } from "@/lib/db";
 import { sendPasswordResetEmail } from "@/lib/email";
 import crypto from "crypto";
+import { hash } from "bcryptjs";
 import { rateLimit, sanitizeEmail } from "@/lib/security";
-import { resetRequestSchema } from "@/lib/validation";
+import { resetRequestSchema, passwordResetSchema, parseValidated } from "@/lib/validation";
 
 export async function requestPasswordReset(email: string) {
   try {
@@ -56,5 +57,39 @@ export async function requestPasswordReset(email: string) {
   } catch (error: any) {
     console.error("Password reset error:", error);
     return { success: false, error: "Failed to process password reset request." };
+  }
+}
+
+export async function resetPassword(input: { token: string; email: string; password: string }) {
+  const parsed = parseValidated(passwordResetSchema, input);
+  if (!parsed.success) {
+    return { success: false, error: "Invalid reset details. Password must be 8–128 characters." };
+  }
+
+  try {
+    const user = await db.user.findUnique({ where: { email: parsed.data.email } });
+    if (
+      !user ||
+      !user.resetToken ||
+      user.resetToken !== parsed.data.token ||
+      !user.resetTokenExpiry ||
+      user.resetTokenExpiry < new Date()
+    ) {
+      return { success: false, error: "This reset link is invalid or has expired. Please request a new one." };
+    }
+
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: await hash(parsed.data.password, 12),
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Password reset error:", error);
+    return { success: false, error: "Failed to reset password. Please try again." };
   }
 }

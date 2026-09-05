@@ -86,7 +86,7 @@ export default async function ComplaintsAndFeedbackPage({
           )}
         </div>
         <p className="mt-0.5 text-sm text-slate-500">
-          Private table complaints and confidential customer feedback. Nothing here is published as reviews.
+          Private spot complaints and confidential customer feedback. Nothing here is published as reviews.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <a href="#complaints" className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100">
@@ -105,7 +105,7 @@ export default async function ComplaintsAndFeedbackPage({
             <MessageSquareWarning className="h-5 w-5 text-primary" /> Complaints
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">
-            Private table complaints submitted via Complaint QR codes.
+            Private spot complaints submitted via Complaint QR codes.
           </p>
         </div>
 
@@ -134,7 +134,7 @@ export default async function ComplaintsAndFeedbackPage({
               <p className="mt-2 text-sm font-semibold text-slate-700">No complaints found</p>
               <p className="mt-1 text-xs text-slate-400">
                 {activeFilter === "all"
-                  ? "When customers submit complaints via table QR codes, they will appear here."
+                  ? "When customers submit complaints via spot QR codes, they will appear here."
                   : `No complaints with status "${complaintStatusLabel(activeFilter)}".`}
               </p>
             </CardContent>
@@ -162,7 +162,7 @@ export default async function ComplaintsAndFeedbackPage({
                         </Badge>
                       </div>
                       <p className="mt-1 text-xs text-slate-500">
-                        {complaint.tableName || complaint.table?.name || "No table"}
+                        {complaint.tableName || complaint.table?.name || "No spot"}
                         {complaint.table?.branch ? ` • ${complaint.table.branch}` : ""} •{" "}
                         {new Date(complaint.createdAt).toLocaleString("en-IN", {
                           day: "2-digit",
@@ -188,7 +188,7 @@ export default async function ComplaintsAndFeedbackPage({
                         <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Complaint ID</dt><dd className="mt-0.5 font-mono text-slate-700">{complaint.id}</dd></div>
                         <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Business</dt><dd className="mt-0.5 text-slate-700">{business?.name}</dd></div>
                         <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Branch</dt><dd className="mt-0.5 text-slate-700">{complaint.table?.branch || "—"}</dd></div>
-                        <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Table</dt><dd className="mt-0.5 text-slate-700">{complaint.tableName || complaint.table?.name || "—"}</dd></div>
+                        <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Spot</dt><dd className="mt-0.5 text-slate-700">{complaint.tableName || complaint.table?.name || "—"}</dd></div>
                         <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Category</dt><dd className="mt-0.5 text-slate-700">{categoryLabels.join(", ")}</dd></div>
                         <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Customer</dt><dd className="mt-0.5 text-slate-700">{complaint.customerName || "Anonymous"}</dd></div>
                         <div><dt className="font-semibold uppercase tracking-wider text-slate-400">Date / Time</dt><dd className="mt-0.5 text-slate-700">{new Date(complaint.createdAt).toLocaleString("en-IN")}</dd></div>
@@ -427,12 +427,12 @@ export default async function ComplaintsAndFeedbackPage({
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Manage complaint setup</CardTitle>
           <CardDescription className="text-xs">
-            Create table QRs and customize complaint options from the QR & NFC section.
+            Create spot QRs and customize complaint options from the QR & NFC section.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
           <Link href="/dashboard/qr-nfc#complaint-qr" className="text-xs font-semibold text-primary hover:underline">
-            Go to Table Complaint QR codes →
+            Go to Spot Complaint QR codes →
           </Link>
         </CardContent>
       </Card>

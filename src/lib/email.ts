@@ -1,13 +1,18 @@
 import nodemailer from 'nodemailer';
 
-const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+// Outbound mail goes through Gmail (Firebase has no native email-sending
+// service). Requires a Google App Password, NOT the regular Gmail password:
+// Google Account → Security → 2-Step Verification → App passwords → Mail.
+const gmailUser = process.env.GMAIL_USER || '';
+const gmailAppPassword = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
+const defaultFrom = process.env.GMAIL_FROM || (gmailUser ? `ReviewTap <${gmailUser}>` : '');
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: smtpPort,
-  secure: smtpPort === 465,
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: gmailUser,
+    pass: gmailAppPassword,
   },
 });
 
@@ -25,7 +30,7 @@ export async function sendContactFormEmail({
   message: string;
 }) {
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: defaultFrom,
     to: 'reviewtaps77@gmail.com',
     replyTo: email,
     subject: `ReviewTap Contact Form - ${businessName}`,
@@ -55,7 +60,7 @@ export async function sendWelcomeEmail({
   dashboardUrl: string;
 }) {
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: defaultFrom,
     to,
     subject: `Welcome to ReviewTap - ${businessName}`,
     html: `
@@ -96,7 +101,7 @@ export async function sendPasswordResetEmail({
   resetUrl: string;
 }) {
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: defaultFrom,
     to,
     subject: 'ReviewTap - Password Reset',
     html: `
@@ -129,7 +134,7 @@ export async function sendSubscriptionNotification({
   status: string;
 }) {
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: defaultFrom,
     to,
     subject: `ReviewTap - Subscription ${status === 'active' ? 'Activated' : 'Updated'} for ${businessName}`,
     html: `

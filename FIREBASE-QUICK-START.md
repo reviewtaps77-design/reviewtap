@@ -62,11 +62,8 @@ Go to [Firebase Console](https://console.firebase.google.com):
 | `NEXTAUTH_SECRET` | Generate new random 32-char string | `openssl rand -base64 32` |
 | `DATABASE_URL` | Cloud SQL connection string | Setup Cloud SQL first |
 | `OPENAI_API_KEY` | Your OpenAI API key | From `.env` |
-| `SMTP_HOST` | `smtp.hostinger.com` | From `.env` |
-| `SMTP_PORT` | `465` | From `.env` |
-| `SMTP_USER` | `noreply@reviewtap.in` | From `.env` |
-| `SMTP_PASS` | Your SMTP password | From `.env` |
-| `SMTP_FROM` | `ReviewTap <noreply@reviewtap.in>` | From `.env` |
+| `GMAIL_USER` | Your Gmail address | From `.env` |
+| `GMAIL_APP_PASSWORD` | Google App Password (Mail) | Google Account → Security → 2-Step Verification → App passwords |
 
 ### 3. **Set Up Cloud SQL Database** (10-20 min)
 
@@ -194,10 +191,10 @@ Check `.firebaserc` contains: `"default": "reviewtap-prod"`
 ### ❌ "Secrets not found"
 Ensure all secrets are set in Firebase Console BEFORE deploying.
 
-### ❌ "SMTP emails not sending"
-- Verify SMTP credentials are correct
-- Check SMTP_PORT is 465 (TLS)
-- Verify sender email is authenticated
+### ❌ "Gmail emails not sending"
+- Verify GMAIL_USER is correct and GMAIL_APP_PASSWORD is a Google App Password (Mail), not the login password
+- 2-Step Verification must be on for the Google account
+- Verify the sender address is the same Gmail account
 
 ### ❌ "Build failed"
 ```bash

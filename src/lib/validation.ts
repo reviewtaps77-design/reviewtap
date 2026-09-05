@@ -87,6 +87,12 @@ export const resetRequestSchema = z.object({
   email: emailSchema,
 });
 
+export const passwordResetSchema = z.object({
+  token: z.string().trim().min(1).max(256),
+  email: emailSchema,
+  password: z.string().min(8).max(128),
+});
+
 export const complaintTableSchema = z.object({
   name: z.string().trim().min(1).max(80),
   branch: z.string().trim().max(120).nullable().optional(),
@@ -123,6 +129,11 @@ export const complaintNoteSchema = z.object({
   complaintId: z.string().trim().min(1).max(120),
   note: z.string().trim().min(1).max(2000),
   authorName: z.string().trim().max(120).nullable().optional(),
+});
+
+export const aiPromptOptionSchema = z.object({
+  label: z.string().trim().min(1).max(80),
+  isActive: z.boolean().default(true),
 });
 
 export function parseValidated<T>(

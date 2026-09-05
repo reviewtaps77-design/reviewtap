@@ -45,6 +45,7 @@ function isTenantFreeRoute(pathname: string): boolean {
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/complaint') ||
+    pathname.startsWith('/get-started') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon.ico')
   );

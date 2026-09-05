@@ -2,6 +2,7 @@ import { requireOwner, getSessionBusinessId } from "@/lib/auth-guard";
 import { signOut } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { 
   LayoutDashboard, 
   Users, 
@@ -43,6 +44,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       },
     },
   });
+
+  // First-time owners must finish the Get Started wizard before using the dashboard.
+  if (business && !business.setupCompleted) {
+    redirect("/get-started");
+  }
 
   const businessName = business?.name || session.user?.name || "My Business";
   const brandColor = business?.brandColor || "#2563eb";

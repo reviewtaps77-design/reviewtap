@@ -56,7 +56,7 @@
     <table>
       <tr><th>Drawer</th><th>What each record keeps</th><th>Special rules</th></tr>
       <tr><td><b>Login accounts</b></td><td>Name, email, scrambled password, role (admin / owner), which business, password-reset code + expiry</td><td>Email must be unique</td></tr>
-      <tr><td><b>Businesses</b></td><td>Name, web-address name, owner contact, Google review link, logo + cover photo links, colors, description, address, phone, website, category, active/paused/expired, dates</td><td>Web-address name must be unique</td></tr>
+      <tr><td><b>Businesses</b></td><td>Name, web-address name, owner contact, Google review link, logo + cover photo links, colors, description, address, phone, website, category, active/paused/expired, first-time setup done or not, dates</td><td>Web-address name must be unique</td></tr>
       <tr><td><b>Subscriptions</b></td><td>Business, plan (monthly / 6-month / 12-month), price in rupees, start + expiry dates, status</td><td>Shown newest-first</td></tr>
       <tr><td><b>Staff members</b></td><td>Business, name, staff code, job role, department, photo, personal web-address name, active or not</td><td>Web-address name unique per business</td></tr>
       <tr><td><b>QR codes</b></td><td>Business (+ staff member if staff QR), kind (business/employee × QR/NFC), web address, on or off</td><td>Images are generated fresh when viewed — never stored</td></tr>
@@ -68,12 +68,13 @@
       <tr><td><b>AI usage</b></td><td>How many words/tokens used, which AI model, when</td><td>For cost tracking</td></tr>
       <tr><td><b>Attendance</b></td><td>Staff member, date, present / absent / on leave</td><td>One row per person per day; only last 6 months kept</td></tr>
       <tr><td><b>Complaint options</b></td><td>Label, display order, enabled or not</td><td>Defaults filled in on first visit</td></tr>
-      <tr><td><b>Tables</b></td><td>Table name (e.g. “Table 12”), branch (e.g. “Pune”), active or not</td><td>Name must be unique per business</td></tr>
-      <tr><td><b>Table QRs</b></td><td>Table link, label, secret code used in the printed QR, on or off</td><td>Secret code must be unique; never changes</td></tr>
+      <tr><td><b>Tables (spots)</b></td><td>Spot name (e.g. “Table 12”, “Room 101”), branch (e.g. “Pune”), active or not — works for every business type</td><td>Name must be unique per business; creating one auto-creates its QR</td></tr>
+      <tr><td><b>Spot QRs</b></td><td>Spot link, label, secret code used in the printed QR, on or off</td><td>Secret code must be unique; never changes</td></tr>
       <tr><td><b>Complaints</b></td><td>Saved copies of table + option names, description, customer name, status, date</td><td>Status starts at “new”</td></tr>
       <tr><td><b>Complaint option picks</b></td><td>Which options belong to which complaint (for multi-pick)</td><td>One row per pick</td></tr>
       <tr><td><b>Private notes</b></td><td>Note text, author, time — management eyes only</td><td>Deleted with their complaint</td></tr>
       <tr><td><b>Complaint page settings</b></td><td>Heading, description, show/hide the description box</td><td>One row per business</td></tr>
+      <tr><td><b>AI review quick picks</b></td><td>Tappable chip label, display order, shown or hidden</td><td>Ready-made chips filled in on first visit; per business</td></tr>
     </table>
   </section>
 
@@ -84,7 +85,7 @@
       <li><b>One business → many</b> logins, plans, staff, QRs, visits, scans, ratings, reviews, feedback, AI usage, attendance, and the whole complaints section.</li>
       <li><b>One staff member → many</b> QRs, visits, scans, ratings, reviews, feedback entries.</li>
       <li><b>One visit → many</b> scans, ratings, reviews, feedback entries, AI usage rows.</li>
-      <li><b>One table → many</b> table QRs and complaints. <b>One table QR → many</b> complaints.</li>
+      <li><b>One spot → many</b> spot QRs and complaints. <b>One spot QR → many</b> complaints.</li>
       <li><b>One complaint → many</b> option picks and private notes. <b>One option → many</b> picks.</li>
       <li><b>One business → one</b> complaint-page settings row.</li>
     </ul>
@@ -124,3 +125,4 @@
 </div>
 </body>
 </html>
+

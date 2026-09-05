@@ -10,6 +10,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Download, ExternalLink, QrCode, Info, User, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { generateQRCodeDataUrl } from "@/lib/qr";
 import { buildComplaintUrl, ensureComplaintDefaults } from "@/lib/complaint";
+import { ensureAiPromptDefaults } from "@/lib/ai-prompt";
 import {
   createComplaintCategory,
   createComplaintQr,
@@ -26,6 +27,13 @@ import {
   updateComplaintSettings,
   updateComplaintTable,
 } from "@/actions/complaint";
+import {
+  createAiPromptOption,
+  deleteAiPromptOption,
+  moveAiPromptOption,
+  toggleAiPromptOption,
+  updateAiPromptOption,
+} from "@/actions/ai-prompt";
 import Link from "next/link";
 
 export const metadata = {
@@ -37,6 +45,7 @@ export default async function QRNFCPage() {
   const businessId = getSessionBusinessId(session);
 
   await ensureComplaintDefaults(businessId);
+  await ensureAiPromptDefaults(businessId);
 
   const business = await db.business.findUnique({
     where: { id: businessId },
@@ -50,7 +59,7 @@ export default async function QRNFCPage() {
 
   if (!business) return null;
 
-  const [complaintTables, complaintQrRows, complaintCategories, complaintSettings] = await Promise.all([
+  const [complaintTables, complaintQrRows, complaintCategories, complaintSettings, aiPromptOptions] = await Promise.all([
     db.complaintTable.findMany({
       where: { businessId },
       include: { _count: { select: { qrs: true, complaints: true } } },
@@ -69,6 +78,10 @@ export default async function QRNFCPage() {
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     }),
     db.complaintSettings.findUnique({ where: { businessId } }),
+    db.aiPromptOption.findMany({
+      where: { businessId },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    }),
   ]);
 
   const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -101,7 +114,7 @@ export default async function QRNFCPage() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-slate-900">QR & NFC Management</h2>
         <p className="text-sm text-slate-500 mt-0.5">
-          Generate, download, and manage review codes for your store location, individual staff, and complaint tables.
+          Generate, download, and manage review codes for your store location, individual staff, and complaint spots.
         </p>
       </div>
 
@@ -227,40 +240,40 @@ export default async function QRNFCPage() {
         )}
       </div>
 
-      {/* ============================================ Complaint QR (per-table) === */}
+      {/* ============================================ Complaint QR (per-spot) === */}
       <div id="complaint-qr" className="scroll-mt-4 space-y-4 border-t border-slate-200 pt-8">
         <div>
           <h3 className="flex items-center gap-2 text-lg font-bold text-slate-900">
-            <QrCode className="h-5 w-5 text-primary" /> Table Complaint QR Codes
+            <QrCode className="h-5 w-5 text-primary" /> Spot Complaint QR Codes
           </h3>
           <p className="text-xs text-slate-500">
-            One unique QR per table. Printed QRs stay valid even if you change options or branding later.
+            One unique QR per spot. Printed QRs stay valid even if you change options or branding later.
           </p>
         </div>
 
-        {/* Tables */}
+        {/* Spots */}
         <Card className="overflow-hidden rounded-3xl border-slate-200/80 bg-white shadow-sm">
           <CardHeader className="border-b border-slate-100">
-            <CardTitle className="text-base">Tables</CardTitle>
-            <CardDescription className="text-xs">Dining tables (or rooms) that complaints can come from. Branch is optional.</CardDescription>
+          <CardTitle className="text-base">Spots</CardTitle>
+          <CardDescription className="text-xs">Spots work for every business — tables, rooms, counters or beds. Branch is optional.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4">
             <form action={async (formData: FormData) => { "use server"; await createComplaintTable(formData); }} className="flex flex-col gap-2 rounded-2xl bg-slate-50 p-3 sm:flex-row sm:items-end">
               <div className="flex-1 space-y-1">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Table name *</Label>
-                <Input name="name" placeholder="Table 12" required className="rounded-xl bg-white" />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Spot name *</Label>
+                <Input name="name" placeholder="Table 12, Room 101, Counter 2…" required className="rounded-xl bg-white" />
               </div>
               <div className="flex-1 space-y-1">
                 <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Branch (optional)</Label>
                 <Input name="branch" placeholder="Pune" className="rounded-xl bg-white" />
               </div>
               <SubmitButton className="rounded-xl sm:w-auto" pendingText="Adding…">
-                <Plus className="h-4 w-4" /> Add Table
+                <Plus className="h-4 w-4" /> Add Spot
               </SubmitButton>
             </form>
 
             {complaintTables.length === 0 ? (
-              <p className="py-4 text-center text-xs text-slate-400">No tables yet. Add your first table above.</p>
+              <p className="py-4 text-center text-xs text-slate-400">No spots yet. Add your first spot above.</p>
             ) : (
               <div className="max-h-96 divide-y divide-slate-100 overflow-y-auto pr-1">
                 {complaintTables.map((table) => (
@@ -301,7 +314,7 @@ export default async function QRNFCPage() {
                         className="mt-2 flex flex-col gap-2 rounded-2xl bg-slate-50 p-3 sm:flex-row sm:items-end"
                       >
                         <div className="flex-1 space-y-1">
-                          <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Table name</Label>
+                          <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Spot name</Label>
                           <Input name="name" defaultValue={table.name} required className="rounded-xl bg-white" />
                         </div>
                         <div className="flex-1 space-y-1">
@@ -329,14 +342,14 @@ export default async function QRNFCPage() {
         <Card className="overflow-hidden rounded-3xl border-slate-200/80 bg-white shadow-sm">
           <CardHeader className="border-b border-slate-100">
             <CardTitle className="text-base">Complaint QR codes</CardTitle>
-            <CardDescription className="text-xs">Assign one QR per table, print it, and place it on the table.</CardDescription>
+            <CardDescription className="text-xs">Assign one QR per spot, print it, and place it at the spot.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4">
             <form action={async (formData: FormData) => { "use server"; await createComplaintQr(formData); }} className="flex flex-col gap-2 rounded-2xl bg-slate-50 p-3 sm:flex-row sm:items-end">
               <div className="flex-1 space-y-1">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Table *</Label>
+                <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Spot *</Label>
                 <select name="tableId" required defaultValue="" className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700">
-                  <option value="" disabled>Select a table</option>
+                  <option value="" disabled>Select a spot</option>
                   {complaintTables.filter((t) => t.status === "active").map((t) => (
                     <option key={t.id} value={t.id}>{t.branch ? `${t.branch} • ${t.name}` : t.name}</option>
                   ))}
@@ -352,13 +365,13 @@ export default async function QRNFCPage() {
             </form>
 
             {complaintQrCards.length === 0 ? (
-              <p className="py-4 text-center text-xs text-slate-400">No Complaint QRs yet. Create one for a table above.</p>
+              <p className="py-4 text-center text-xs text-slate-400">No Complaint QRs yet. Create one for a spot above.</p>
             ) : (
               <div className="grid max-h-[36rem] grid-cols-1 gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
                 {complaintQrCards.map(({ qr, url, qrDataUrl }) => (
                   <div key={qr.id} className="flex flex-col space-y-3 rounded-2xl border border-slate-200/80 p-4">
                     <div className="flex items-start gap-3">
-                      <img src={qrDataUrl} alt={`Complaint QR for ${qr.table?.name || "table"}`} className="h-24 w-24 shrink-0 rounded-xl border bg-white p-1.5 shadow-inner" />
+                      <img src={qrDataUrl} alt={`Complaint QR for ${qr.table?.name || "spot"}`} className="h-24 w-24 shrink-0 rounded-xl border bg-white p-1.5 shadow-inner" />
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold text-slate-900">
                           {qr.table ? (qr.table.branch ? `${qr.table.branch} • ${qr.table.name}` : qr.table.name) : "Unassigned"}
@@ -402,7 +415,7 @@ export default async function QRNFCPage() {
                         className="mt-2 space-y-2 rounded-2xl bg-slate-50 p-3"
                       >
                         <div className="space-y-1">
-                          <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Table</Label>
+                          <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Spot</Label>
                           <select name="tableId" defaultValue={qr.tableId || ""} className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700">
                             <option value="">Unassigned</option>
                             {complaintTables.map((t) => (
@@ -528,6 +541,81 @@ export default async function QRNFCPage() {
               </div>
               <SubmitButton className="w-full rounded-xl sm:w-auto" pendingText="Saving…">Save Settings</SubmitButton>
             </form>
+          </CardContent>
+        </Card>
+
+        {/* AI Review quick options */}
+        <Card id="ai-options" className="overflow-hidden rounded-3xl border-slate-200/80 bg-white shadow-sm scroll-mt-4">
+          <CardHeader className="border-b border-slate-100">
+            <CardTitle className="text-base">AI Review quick options</CardTitle>
+            <CardDescription className="text-xs">The tappable “What did you like most?” chips on your AI Review Assistant page. Changes apply instantly.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 p-4">
+            <form action={async (formData: FormData) => { "use server"; await createAiPromptOption(formData); }} className="flex flex-col gap-2 rounded-2xl bg-slate-50 p-3 sm:flex-row sm:items-end">
+              <div className="flex-1 space-y-1">
+                <Label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">New option *</Label>
+                <Input name="label" placeholder="e.g. Live music nights" required className="rounded-xl bg-white" />
+              </div>
+              <SubmitButton className="rounded-xl sm:w-auto" pendingText="Adding…">
+                <Plus className="h-4 w-4" /> Add Option
+              </SubmitButton>
+            </form>
+
+            {aiPromptOptions.length === 0 ? (
+              <p className="py-4 text-center text-xs text-slate-400">No quick options yet. Add your first one above.</p>
+            ) : (
+              <div className="max-h-96 divide-y divide-slate-100 overflow-y-auto pr-1">
+                {aiPromptOptions.map((option, index) => (
+                  <div key={option.id} className="py-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <form action={async () => { "use server"; await moveAiPromptOption(option.id, "up"); }}>
+                          <SubmitButton variant="ghost" size="sm" className="h-7 w-7 p-0" disabled={index === 0} pendingText="">
+                            <ChevronUp className="h-4 w-4" />
+                          </SubmitButton>
+                        </form>
+                        <form action={async () => { "use server"; await moveAiPromptOption(option.id, "down"); }}>
+                          <SubmitButton variant="ghost" size="sm" className="h-7 w-7 p-0" disabled={index === aiPromptOptions.length - 1} pendingText="">
+                            <ChevronDown className="h-4 w-4" />
+                          </SubmitButton>
+                        </form>
+                        <p className={`text-sm font-semibold ${option.isActive ? "text-slate-900" : "text-slate-400 line-through"}`}>
+                          {option.label}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Badge className={`border-0 text-[10px] font-bold uppercase ${option.isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"}`}>
+                          {option.isActive ? "Shown" : "Hidden"}
+                        </Badge>
+                        <form action={async () => { "use server"; await toggleAiPromptOption(option.id); }}>
+                          <SubmitButton variant="outline" size="sm" className="h-7 rounded-lg px-2 text-[11px]" pendingText="…">
+                            {option.isActive ? "Hide" : "Show"}
+                          </SubmitButton>
+                        </form>
+                        <form action={async () => { "use server"; await deleteAiPromptOption(option.id); }}>
+                          <SubmitButton variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-red-600" pendingText="">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </SubmitButton>
+                        </form>
+                      </div>
+                    </div>
+                    <details className="group ml-9 mt-1">
+                      <summary className="cursor-pointer list-none text-xs font-semibold text-primary">
+                        <span className="group-open:hidden">Rename</span>
+                        <span className="hidden group-open:inline">Close</span>
+                      </summary>
+                      <form
+                        action={async (formData: FormData) => { "use server"; await updateAiPromptOption(option.id, formData); }}
+                        className="mt-2 flex gap-2"
+                      >
+                        <Input name="label" defaultValue={option.label} required className="h-9 rounded-xl text-sm" />
+                        <SubmitButton size="sm" className="h-9 rounded-xl" pendingText="Saving…">Save</SubmitButton>
+                      </form>
+                    </details>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -58,7 +58,7 @@ echo ""
 
 # Step 4: Verify secrets are set
 echo "Step 4: Checking required environment secrets..."
-REQUIRED_SECRETS=("NEXTAUTH_SECRET" "DATABASE_URL" "OPENAI_API_KEY" "SMTP_HOST" "SMTP_USER" "SMTP_PASS")
+REQUIRED_SECRETS=("NEXTAUTH_SECRET" "DATABASE_URL" "OPENAI_API_KEY" "GMAIL_USER" "GMAIL_APP_PASSWORD")
 
 echo "The following secrets must be set in Firebase Console:"
 echo ""

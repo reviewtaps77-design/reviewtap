@@ -43,12 +43,12 @@ firebase functions:config:set \
   nextauth.secret="YOUR_NEXTAUTH_SECRET" \
   database.url="YOUR_CLOUD_SQL_CONNECTION_STRING" \
   openai.api_key="YOUR_OPENAI_API_KEY" \
-  smtp.host="smtp.hostinger.com" \
-  smtp.port="465" \
-  smtp.user="noreply@reviewtap.in" \
-  smtp.pass="YOUR_SMTP_PASSWORD" \
-  smtp.from="ReviewTap <noreply@reviewtap.in>"
+  gmail.user="you@gmail.com" \
+  gmail.app_password="YOUR_GOOGLE_APP_PASSWORD"
 ```
+
+> Email goes through Gmail (Google App Password, not the login password):
+> Google Account → Security → 2-Step Verification → App passwords → Mail.
 
 **Or via Firebase Console:**
 1. Go to [Firebase Console](https://console.firebase.google.com)

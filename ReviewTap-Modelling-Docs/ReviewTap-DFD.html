@@ -73,7 +73,7 @@
     <a href="#level0">Big Picture</a>
     <a href="#level1">Main Steps</a>
     <a href="#level2a">Customer Review Journey</a>
-    <a href="#level2b">Table Complaint Journey</a>
+    <a href="#level2b">Spot Complaint Journey</a>
     <a href="#level2c">Staff Attendance</a>
     <a href="#level2d">New Business Setup</a>
     <a href="#cross">House Rules</a>
@@ -121,7 +121,8 @@
           <tr><td><code class="id">D9</code></td><td><b>Private feedback</b></td><td>Star rating, what they liked, what to improve, read or resolved</td></tr>
           <tr><td><code class="id">D10</code></td><td><b>AI usage</b></td><td>How much AI writing was used, for cost tracking</td></tr>
           <tr><td><code class="id">D11</code></td><td><b>Attendance</b></td><td>Each staff member, each day: present, absent or on leave</td></tr>
-          <tr><td><code class="id">D12</code></td><td><b>Complaints section</b></td><td>Complaint options, tables, table QRs, complaints, private notes, page settings</td></tr>
+          <tr><td><code class="id">D12</code></td><td><b>Complaints section</b></td><td>Complaint options, spots (tables/rooms/counters), spot QRs, complaints, private notes, page settings</td></tr>
+          <tr><td><code class="id">D13</code></td><td><b>AI review quick picks</b></td><td>Tappable “what did you like” chips per business, display order, shown or hidden</td></tr>
         </table>
       </div>
     </div>
@@ -139,7 +140,7 @@
       <div class="harrow">⇄</div>
       <div class="sys">
         <b>REVIEWTAP WEBSITE</b><br>
-        <small>QR reviews · table complaints · AI writing help · owner reports · staff attendance · automatic old-data cleanup<br>All info saved in drawers D1–D12</small>
+        <small>QR reviews · table complaints · AI writing help · owner reports · staff attendance · automatic old-data cleanup<br>All info saved in drawers D1–D13</small>
       </div>
       <div class="harrow">⇄</div>
       <div class="syscol">
@@ -158,19 +159,19 @@
     <div class="flow">
       <div class="box process"><b>P1 · Website Pages for Visitors</b><small>Home, pricing, contact and login pages · messages from the contact form are emailed to the team</small></div>
       <div class="arrow">▼</div>
-      <div class="box process"><b>P2 · Login</b><small>Owners and admins sign in with email + password and get a secure session that remembers who they are</small></div>
+      <div class="box process"><b>P2 · Login</b><small>Owners and admins sign in with email + password and get a secure session that remembers who they are · a first-time owner is sent to the Get Started wizard instead of the dashboard · forgotten passwords arrive as a one-hour, one-time email link</small></div>
       <div class="arrow">▼</div>
       <div class="box process"><b>P3 · New Business Setup (Admin)</b><small>Admin creates the business, its owner login, its plan and its first QR code — all in one safe step · admin can also extend plans, pause businesses, and watch all staff and AI usage across businesses · <i>full detail in “New Business Setup”</i></small></div>
       <div class="arrow">▼</div>
       <div class="row c3">
         <div class="box process"><b>P4.1 · Business Profile</b><small>Owner adds logo and cover photos (uploaded with a progress bar to photo storage), colors, address and Google review link · each business gets its own web address and customer page</small></div>
         <div class="box process"><b>P4.2 · Staff Management</b><small>Owner adds staff and compares them side by side; each person automatically gets their own QR code, downloadable for printing · the same link can also be put on tap-to-pay style NFC cards</small></div>
-        <div class="box process"><b>P4.3 · Complaint Setup</b><small>Owner adds tables, prints one QR per table, and customizes the complaint options</small></div>
+        <div class="box process"><b>P4.3 · Complaint Setup</b><small>Owner adds spots (tables, rooms, counters — each instantly gets its own QR), prints them, and customizes the complaint options</small></div>
       </div>
       <div class="arrow">▼</div>
       <div class="row c2">
         <div class="box process"><b>P5 · Customer Review Journey</b><small>Customer scans → rates → AI helps write → posts on Google · <i>full detail below</i></small></div>
-        <div class="box process"><b>P6 · Table Complaint Journey</b><small>Customer scans table QR → fills a private complaint → owner handles it · <i>full detail below</i></small></div>
+        <div class="box process"><b>P6 · Spot Complaint Journey</b><small>Customer scans spot QR → fills a private complaint → owner handles it · <i>full detail below</i></small></div>
       </div>
       <div class="arrow">▼</div>
       <div class="row c3">
@@ -195,18 +196,18 @@
       <div class="arrow">▼</div>
       <div class="row c3">
         <div class="box entity"><b>Button 1 · Direct Google Review</b><small>Opens Google directly so the customer can post (this path is not tracked)</small></div>
-        <div class="box process"><b>Button 2 · AI Writing Help</b><small>Customer answers 2–3 quick questions → the AI drafts a review → customer edits it → presses “Copy &amp; Continue” → the review is pasted on Google → thank-you message. The draft and the Google click are saved.</small></div>
+        <div class="box process"><b>Button 2 · AI Writing Help</b><small>Customer taps the business's own quick-pick chips + answers 2–3 quick questions → the AI drafts a review → customer edits it → presses “Copy &amp; Continue” → the review is pasted on Google → thank-you message. The draft and the Google click are saved.</small></div>
         <div class="box process"><b>Button 3 · Private Feedback</b><small>Customer writes a private message for the management → saved as unread → thank-you message</small></div>
       </div>
     </div>
   </section>
 
   <section class="card" id="level2b">
-    <h2>Table Complaint Journey — Scan to Private Complaint</h2>
+    <h2>Spot Complaint Journey — Scan to Private Complaint</h2>
     <p class="sub">Each table has its own QR. Scanning it opens a page like …/complaint/abc123 — that secret code already tells the system the business and the table, so printed QRs never need reprinting.</p>
     <div class="flow">
-      <div class="box process"><b>Owner setup (done once)</b><small>Add tables (with branch name if any) → print one QR per table → customize the complaint options and the page heading. Ready-made options are filled in automatically: Slow Service, Staff Behaviour, Food Quality, Price, Cleanliness, Other.</small></div>
-      <div class="arrow">▼<small>customer scans the table QR (no login, no typing of table number)</small></div>
+      <div class="box process"><b>Owner setup (done once, or in the Get Started wizard)</b><small>Add spots (with branch name if any) — each spot instantly gets its own QR → print and place them → customize the complaint options and the page heading. Ready-made options are filled in automatically: Slow Service, Staff Behaviour, Food Quality, Price, Cleanliness, Other.</small></div>
+      <div class="arrow">▼<small>customer scans the spot QR (no login, no typing of spot name or number)</small></div>
       <div class="box process"><b>The link is checked</b><small>The system finds the right business and table. A switched-off QR shows “This QR code is currently unavailable”; a wrong link shows “Invalid Link”.</small></div>
       <div class="arrow">▼</div>
       <div class="box process"><b>Complaint form</b><small>Business logo, colors and table name on top → “What went wrong?” with tappable options (more than one can be picked) → optional description box → optional name → Submit Complaint</small></div>
@@ -268,3 +269,4 @@
 </div>
 </body>
 </html>
+

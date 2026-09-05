@@ -11,7 +11,7 @@ export default async function ComplaintPage({ params }: { params: Promise<{ toke
         ? { title: "QR Unavailable", body: "This QR code is currently unavailable. Please contact the staff for help." }
         : resolution.reason === "business_unavailable"
           ? { title: "Service Unavailable", body: "This business is currently not accepting complaints. Please try again later." }
-          : { title: "Invalid Link", body: "This complaint link is invalid. Please scan the QR code at your table again." };
+          : { title: "Invalid Link", body: "This complaint link is invalid. Please scan the QR code at your spot again." };
 
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 py-12 text-center">

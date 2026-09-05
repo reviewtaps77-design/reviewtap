@@ -57,7 +57,7 @@
 
   <section class="card" id="complaint">
     <h2>Complaint Lifecycle — New → In Progress → Resolved → Closed</h2>
-    <p class="sub">Every table complaint is born “new” and the owner moves it forward. Any step can be revisited.</p>
+    <p class="sub">Every spot complaint is born “new” and the owner moves it forward. Any step can be revisited.</p>
     <div class="states">
       <span class="state s-new">NEW (automatic on submit)</span><span class="s-arrow">→</span>
       <span class="state s-prog">IN PROGRESS (owner starts work)</span><span class="s-arrow">→</span>
@@ -69,7 +69,7 @@
       <tr><td>Customer presses Submit</td><td>Customer</td><td>Complaint saved with status “new”, table + option name copies kept</td></tr>
       <tr><td>Owner picks a new status + Update</td><td>Owner</td><td>Status saved; inbox counts refresh immediately</td></tr>
       <tr><td>Owner adds a private note</td><td>Owner</td><td>Note saved with author + time; never shown to customers</td></tr>
-      <tr><td>Owner deletes the table/option/QR</td><td>Owner</td><td>Old complaints stay readable thanks to the saved name copies</td></tr>
+      <tr><td>Owner deletes the spot/option/QR</td><td>Owner</td><td>Old complaints stay readable thanks to the saved name copies</td></tr>
       <tr><td>QR is switched off</td><td>Owner</td><td>New scans see “currently unavailable”; old complaints untouched</td></tr>
     </table>
   </section>
@@ -102,7 +102,7 @@
       <li><b>Suspended / expired:</b> customers see a friendly notice instead of review/complaint pages; all saved data stays safe and comes back when reactivated.</li>
       <li><b>Staff active/inactive:</b> inactive staff disappear from the QR list but their past ratings stay.</li>
       <li><b>Table active/inactive:</b> new QRs can only be made for active tables.</li>
-      <li><b>QR active/disabled:</b> a disabled table QR shows “currently unavailable” but old complaints remain.</li>
+      <li><b>QR active/disabled:</b> a disabled spot QR shows “currently unavailable” but old complaints remain.</li>
       <li><b>Complaint option enabled/disabled:</b> disabled options vanish from the customer form instantly — no reprinting.</li>
       <li><b>Plan (monthly / 6-month / 12-month):</b> extending adds months to the expiry date and flips the business back to active.</li>
     </ul>
@@ -129,14 +129,16 @@
     <p class="sub">The exact paths from the live walkthroughs.</p>
     <table>
       <tr><th>Who &amp; goal</th><th>Steps</th><th>Ends with</th></tr>
-      <tr><td><b>Customer → Google review</b></td><td>1 Scan QR → 2 welcome page → 3 “AI Review Assistant” → 4 answer 2–3 questions → 5 review appears, edit if wanted → 6 “Copy &amp; Continue to Google” → 7 paste on Google</td><td>Thank-you screen; click tracked privately</td></tr>
+      <tr><td><b>Customer → Google review</b></td><td>1 Scan QR → 2 welcome page → 3 “AI Review Assistant” → 4 tap the business's own quick chips + answer 2–3 questions → 5 review appears, edit if wanted → 6 “Copy &amp; Continue to Google” → 7 paste on Google</td><td>Thank-you screen; click tracked privately</td></tr>
       <tr><td><b>Customer → rate staff</b></td><td>1 Scan staff QR → 2 give 3 star-ratings + optional comment → 3 Continue</td><td>Lands on business page; rating saved</td></tr>
       <tr><td><b>Customer → private feedback</b></td><td>1 “Private Feedback” → 2 stars + liked/improve + optional name → 3 Send</td><td>Thank-you screen; inbox shows NEW/unread</td></tr>
       <tr><td><b>Customer → table complaint</b></td><td>1 Scan table QR → 2 branded page shows table → 3 pick one or more options → 4 optional description → 5 Submit</td><td>“Thank you for letting us know.”; inbox shows NEW</td></tr>
       <tr><td><b>Owner → morning routine</b></td><td>1 Open Overview (fresh data after 30 s idle) → 2 mark attendance → 3 triage complaints/feedback → 4 check staff scores</td><td>All statuses/notes saved; buttons confirm</td></tr>
+      <tr><td><b>Owner → new business (first login)</b></td><td>1 Sign in → 2 bounced to Get Started → 3 profile (+ photos) → 4 add staff → 5 add spots (QRs auto-created) → 6 tweak complaint + AI options → 7 Complete Setup (or Skip)</td><td>Setup flag saved; dashboard opens; never asked again</td></tr>
       <tr><td><b>Owner → new table QR</b></td><td>1 QR &amp; NFC page → 2 add table → 3 create QR for it → 4 download PNG → 5 print &amp; place on table</td><td>Scans work instantly; link never changes</td></tr>
       <tr><td><b>Admin → new business</b></td><td>1 “Add New Business” → 2 fill form + plan → 3 submit</td><td>Business + login + plan + QR created together; welcome email sent</td></tr>
       <tr><td><b>Anyone idle 30 s</b></td><td>1 Stop touching → 2 timer fires → 3 page data reloads quietly</td><td>Fresh numbers; typed text untouched</td></tr>
+      <tr><td><b>Visitor → password reset</b></td><td>1 Forgot-password form → 2 one-hour link emailed → 3 open link → 4 set new password → 5 login</td><td>Token cleared after use; reuse blocked; old password restored only by a new reset</td></tr>
     </table>
   </section>
 
@@ -155,3 +157,5 @@
 </div>
 </body>
 </html>
+
+
