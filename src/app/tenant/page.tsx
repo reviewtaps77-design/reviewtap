@@ -111,41 +111,41 @@ export default async function TenantLandingPage() {
           </div>
         </Link>
 
-        {/* CTA 2: Direct Google Review (compact) */}
+        {/* CTA 2: Direct Google Review (compact, half size) */}
         <a
           href={business.googleReviewUrl || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative flex items-center p-3 w-full rounded-2xl text-white shadow transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+          className="group relative flex items-center p-2 w-full rounded-2xl text-white shadow transition-all duration-200 hover:shadow-md active:scale-[0.98]"
           style={{ backgroundColor: brandColor }}
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 mr-3 shrink-0">
-            <Star className="w-5 h-5 fill-amber-300 text-amber-300" />
+          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/20 mr-2 shrink-0">
+            <Star className="w-3 h-3 fill-amber-300 text-amber-300" />
           </div>
           <div className="flex-1 text-left">
-            <div className="flex items-center gap-1.5 font-bold text-sm">
+            <div className="flex items-center gap-1 font-bold text-xs">
               <span>Write a Google Review</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
+              <ExternalLink className="w-3 h-3 opacity-70 group-hover:opacity-100" />
             </div>
-            <span className="block text-[11px] text-white/85">
+            <span className="block text-[10px] text-white/85">
               Direct 5-star review on Google Maps
             </span>
           </div>
         </a>
 
-        {/* CTA 3: Private Feedback (compact) */}
+        {/* CTA 3: Private Feedback (compact, half size) */}
         <Link
           href={`${tenantBase}/feedback${employeeSlug ? `?employee=${encodeURIComponent(employeeSlug)}` : ""}`}
-          className="group flex items-center p-3 w-full bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-2xl transition-all duration-200 border border-slate-200/80 shadow-sm active:scale-[0.98]"
+          className="group flex items-center p-2 w-full bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-2xl transition-all duration-200 border border-slate-200/80 shadow-sm active:scale-[0.98]"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200/80 mr-3 text-slate-600 shrink-0">
-            <MessageSquare className="w-5 h-5" />
+          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-200/80 mr-2 text-slate-600 shrink-0">
+            <MessageSquare className="w-3 h-3" />
           </div>
           <div className="flex-1 text-left">
-            <span className="block font-bold text-sm text-slate-800">
+            <span className="block font-bold text-xs text-slate-800">
               Private Feedback
             </span>
-            <span className="block text-[11px] text-slate-500">
+            <span className="block text-[10px] text-slate-500">
               Send suggestions directly to management
             </span>
           </div>
